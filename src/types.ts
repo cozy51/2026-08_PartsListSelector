@@ -1,9 +1,9 @@
-export type Specification = { code: string; name: string; options: string[]; order: number; note: string };
+export type Specification = { no: number; name: string; options: string[]; order: number; note: string };
 export type Unit = { no: string; name: string; order: number; note: string };
 export type PLRule = { id: string; unitNo: string; partNumber: string; name: string; note: string; conditions: Record<string, string> };
 export type MasterData = { specifications: Specification[]; units: Unit[]; rules: PLRule[] };
 export type Selection = Record<string, string>;
-export type ConditionDetail = { code: string; expected: string; actual: string; matched: boolean; missing: boolean };
+export type ConditionDetail = { specificationNo: string; expected: string; actual: string; matched: boolean; missing: boolean };
 export type Candidate = PLRule & { details: ConditionDetail[] };
 export type SelectionStatus = 'selected' | 'none' | 'multiple';
-export type UnitResult = { unit: Unit; candidates: Candidate[]; nearCandidates: Candidate[]; status: SelectionStatus; missingCodes: string[]; confirmedPartNumber?: string };
+export type UnitResult = { unit: Unit; candidates: Candidate[]; nearCandidates: Candidate[]; status: SelectionStatus; missingSpecificationNos: string[]; confirmedPartNumber?: string };

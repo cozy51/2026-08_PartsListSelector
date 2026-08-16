@@ -1,12 +1,16 @@
 import type { MasterData } from '../types';
 export const DB_NAME = 'parts-list-selector';
-export const DB_VERSION = 1;
+// v2: 仕様No.方式。v3: 選定対象ユニットマスターを提示一覧へ更新。
+export const DB_VERSION = 3;
 const STORE = 'master';
 
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = () => { if (!request.result.objectStoreNames.contains(STORE)) request.result.createObjectStore(STORE); };
+    request.onupgradeneeded = (event) => {
+      if (!request.result.objectStoreNames.contains(STORE)) request.result.createObjectStore(STORE);
+      else if (event.oldVersion < 3) request.transaction?.objectStore(STORE).delete('data');
+    };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
