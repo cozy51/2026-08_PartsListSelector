@@ -1,4 +1,4 @@
-import type { MasterData } from '../types';
+import type { AppSyncData, MasterData } from '../types';
 
 const GIS_URL = 'https://accounts.google.com/gsi/client';
 const DRIVE_API = 'https://www.googleapis.com/drive/v3/files';
@@ -13,7 +13,7 @@ type TokenClient = { requestAccessToken: (options?: { prompt?: string }) => void
 type GoogleIdentity = { accounts: { oauth2: { initTokenClient: (config: { client_id: string; scope: string; callback: (response: TokenResponse) => void; error_callback: () => void }) => TokenClient } } };
 type DriveFile = { id: string; name: string; modifiedTime?: string };
 type DriveList = { files?: DriveFile[] };
-export type DriveMasterBackup = { data: MasterData; modifiedTime?: string };
+export type DriveMasterBackup = { data: AppSyncData; modifiedTime?: string };
 
 declare global { interface Window { google?: GoogleIdentity } }
 
@@ -80,7 +80,7 @@ async function findMasterFile(folderId: string): Promise<DriveFile | undefined> 
   return ((await response.json()) as DriveList).files?.[0];
 }
 
-export async function saveMasterToGoogleDrive(data: MasterData): Promise<string> {
+export async function saveMasterToGoogleDrive(data: AppSyncData): Promise<string> {
   const folder = await getAppFolder(true);
   if (!folder) throw new Error('Google Driveの保存先フォルダを作成できませんでした。');
   const existing = await findMasterFile(folder.id);
@@ -92,7 +92,9 @@ export async function saveMasterToGoogleDrive(data: MasterData): Promise<string>
 }
 
 async function readMasterFile(file: DriveFile): Promise<DriveMasterBackup> {
-  return { data: (await (await driveFetch(`${DRIVE_API}/${file.id}?alt=media`)).json()) as MasterData, modifiedTime: file.modifiedTime };
+  const raw = (await (await driveFetch(`${DRIVE_API}/${file.id}?alt=media`)).json()) as AppSyncData | MasterData;
+  const data: AppSyncData = 'masterData' in raw ? raw : { schemaVersion:1, masterData:raw, selection:{}, syncedAt:file.modifiedTime??new Date().toISOString() };
+  return { data, modifiedTime: file.modifiedTime };
 }
 
 export async function getGoogleDriveBackupInfo(): Promise<DriveMasterBackup | undefined> {

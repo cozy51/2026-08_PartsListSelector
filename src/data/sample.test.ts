@@ -38,4 +38,25 @@ describe('sample master data', () => {
     expect(sampleData.rules.some((rule) => 'name' in rule)).toBe(false);
     expect(sampleData.rules.find((rule) => rule.partNumber === 'HH11101B10')?.note).toBe('ダイカスト化');
   });
+
+  it('STEERING UNIT(F)の41行を13件のユニークPLに統合する', () => {
+    const frontSteeringRules = sampleData.rules.filter((rule) => rule.unitNo === '110');
+    expect(frontSteeringRules).toHaveLength(13);
+    expect(frontSteeringRules.map((rule) => rule.partNumber)).toEqual([
+      'HH11101F10','HH311FDZ10','HH11102F10','HH311FH810','HH11103F10','HH11104F10','HH311FCJ10',
+      'HH311FD110','HH3114AP10','HH311FDN10','HH111A1F10','HH3131TK10','HH3119LH10',
+    ]);
+    expect(frontSteeringRules.find((rule) => rule.partNumber === 'HH11101F10')?.conditions).toMatchObject({ S003:['S003-1'], S014:['S014-1'], S054:['S054-1'], S059:['S059-1'] });
+    expect(frontSteeringRules.find((rule) => rule.partNumber === 'HH3114AP10')?.conditions.S003).toEqual(['S003-2']);
+    expect(frontSteeringRules.find((rule) => rule.partNumber === 'HH311FD110')?.conditions.S054).toEqual(['S054-2']);
+    expect(frontSteeringRules.find((rule) => rule.partNumber === 'HH311FDN10')?.conditions.S059).toEqual(['S059-2']);
+  });
+
+  it('CORE UNIT (350X)の11行を型式別の3件のユニークPLに統合する', () => {
+    const coreRules = sampleData.rules.filter((rule) => rule.unitNo === '120');
+    expect(coreRules.map((rule) => rule.partNumber)).toEqual(['HH11200010','HH11201010','HH112A0010']);
+    expect(coreRules.find((rule) => rule.partNumber === 'HH11200010')?.conditions.S001).toEqual(['S001-7','S001-8','S001-9','S001-10']);
+    expect(coreRules.find((rule) => rule.partNumber === 'HH11201010')?.conditions.S001).toEqual(['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6']);
+    expect(coreRules.find((rule) => rule.partNumber === 'HH112A0010')?.conditions.S001).toEqual(['S001-13']);
+  });
 });
