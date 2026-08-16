@@ -1,0 +1,86 @@
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { sampleData } from './data/sample';
+import { exportMaster, exportResults, importMaster, downloadCsv, type MasterKind } from './services/csv';
+import { selectParts } from './services/selector';
+import { DB_NAME, DB_VERSION, loadMaster, saveMaster } from './services/storage';
+import { authorizeGoogleDrive, disconnectGoogleDrive, GOOGLE_CLIENT_ID_KEY, isGoogleDriveAuthorized, loadMasterFromGoogleDrive, saveMasterToGoogleDrive } from './services/googleDrive';
+import type { MasterData, Selection, UnitResult } from './types';
+
+const statusLabel = { selected: '選定済み', multiple: '複数候補あり', none: '候補なし' } as const;
+const optionLabel = (specifications: MasterData['specifications'], optionCode: string) => specifications.flatMap((specification) => specification.options).find((option) => option.code === optionCode)?.label ?? optionCode;
+function App() {
+  const [data, setData] = useState<MasterData>(sampleData); const [selection, setSelection] = useState<Selection>({});
+  const [results, setResults] = useState<UnitResult[] | null>(null); const [active, setActive] = useState<UnitResult>();
+  const [search, setSearch] = useState(''); const [tab, setTab] = useState<'select'|'master'>('select');
+  const [workTab, setWorkTab] = useState<'specifications'|'results'>('specifications'); const [notice, setNotice] = useState('');
+  const [driveClientId, setDriveClientId] = useState(() => localStorage.getItem(GOOGLE_CLIENT_ID_KEY) ?? '');
+  const [driveConnected, setDriveConnected] = useState(false); const [driveBusy, setDriveBusy] = useState(false);
+  const importRef = useRef<HTMLInputElement>(null); const [importKind, setImportKind] = useState<MasterKind>('specifications');
+  useEffect(() => { loadMaster().then((saved) => { if (saved) setData(saved); else saveMaster(sampleData); }).catch(() => setNotice('IndexedDBを利用できないため、サンプルデータで起動しました。')); }, []);
+  const specs = useMemo(() => [...data.specifications].sort((a,b) => a.order-b.order), [data]);
+  const filtered = (results ?? []).filter((r) => `${r.unit.name} ${r.unit.note} ${r.candidates.map(c=>c.partNumber).join(' ')}`.toLowerCase().includes(search.toLowerCase()));
+  const updateData = async (next: MasterData) => { setData(next); await saveMaster(next); setNotice('マスターデータを保存しました。'); };
+  const runSelection = () => { setResults(selectParts(data, selection)); setActive(undefined); setWorkTab('results'); };
+  const confirmSelection = (unitNo:string, partNumber:string) => setResults((old) => old?.map((r) => r.unit.no===unitNo ? {...r,confirmedPartNumber:partNumber}:r) ?? null);
+  const connectDrive = async () => { setDriveBusy(true); try { await authorizeGoogleDrive(driveClientId); localStorage.setItem(GOOGLE_CLIENT_ID_KEY, driveClientId.trim()); setDriveConnected(isGoogleDriveAuthorized()); setNotice('Google Driveに接続しました。'); } catch (error) { setNotice(error instanceof Error ? error.message : 'Google Driveへの接続に失敗しました。'); } finally { setDriveBusy(false); } };
+  const saveToDrive = async () => { setDriveBusy(true); try { const modified = await saveMasterToGoogleDrive(data); setNotice(`Google Driveへ保存しました（${new Date(modified).toLocaleString('ja-JP')}）。`); } catch (error) { setDriveConnected(isGoogleDriveAuthorized()); setNotice(error instanceof Error ? error.message : 'Google Driveへの保存に失敗しました。'); } finally { setDriveBusy(false); } };
+  const loadFromDrive = async () => { if (!window.confirm('Google Driveのデータでブラウザ内のマスターを置き換えます。よろしいですか？')) return; setDriveBusy(true); try { const remote = await loadMasterFromGoogleDrive(); if (!Array.isArray(remote.specifications)||!Array.isArray(remote.units)||!Array.isArray(remote.rules)||remote.specifications.some((specification)=>!/^S\d{3}$/.test(specification.code)||!Array.isArray(specification.options))) throw new Error('Google DriveのファイルはS001形式の仕様コード方式ではありません。'); await updateData(remote); setNotice('Google Driveからマスターデータを読み込みました。'); } catch (error) { setDriveConnected(isGoogleDriveAuthorized()); setNotice(error instanceof Error ? error.message : 'Google Driveからの読み込みに失敗しました。'); } finally { setDriveBusy(false); } };
+  const onImport = async (file?:File) => { if (!file) return; try { const imported=importMaster(await file.text(),importKind); await updateData({...data,[importKind]:imported}); } catch(e) { setNotice(`取込エラー: ${e instanceof Error ? e.message:'形式を確認してください。'}`); } };
+  return <div className="app">
+    <header><div className="brand"><span className="logo">PL</span><div><h1>Parts List Selector</h1><p>仕様に適合する部品表を、ユニットごとに選定します</p></div></div><nav><button className={tab==='select'?'active':''} onClick={()=>setTab('select')}>仕様選択・結果</button><button className={tab==='master'?'active':''} onClick={()=>setTab('master')}>マスターデータ管理</button></nav></header>
+    <main>{notice && <div className="notice" role="status">{notice}<button onClick={()=>setNotice('')}>×</button></div>}
+    {tab==='select' ? <section className="workspace">
+      <div className="work-tabs" role="tablist" aria-label="PL選定作業">
+        <button role="tab" aria-selected={workTab==='specifications'} className={workTab==='specifications'?'active':''} onClick={()=>setWorkTab('specifications')}><span>1</span> 仕様選択 <small>{Object.values(selection).filter(Boolean).length}/{specs.length}</small></button>
+        <button role="tab" aria-selected={workTab==='results'} className={workTab==='results'?'active':''} disabled={!results} onClick={()=>setWorkTab('results')}><span>2</span> PL選定結果 {results && <small>{results.length}ユニット</small>}</button>
+      </div>
+      {workTab==='specifications' ? <section className="panel tab-panel"><div className="section-heading"><div><span className="eyebrow">SPECIFICATIONS</span><h2>仕様選択</h2><p>各項目を選択してください。未選択の項目は空欄のまま選定できます。</p></div><span className="counter">{Object.values(selection).filter(Boolean).length} / {specs.length} 項目選択</span></div>
+        <div className="spec-scroll"><div className="spec-grid">{specs.map((spec)=><label className="spec-row" key={spec.code}><span className="number">{spec.code}</span><span className="spec-info"><b>{spec.name}</b><small>No.{String(spec.no).padStart(2,'0')}　{spec.note}</small></span><select value={selection[spec.code]??''} onChange={(e)=>setSelection({...selection,[spec.code]:e.target.value})}><option value="">未選択</option>{spec.options.map((option)=><option key={option.code} value={option.code}>{option.code}　{option.label}</option>)}</select></label>)}</div></div>
+        <div className="actions sticky-actions"><button className="secondary" onClick={()=>{setSelection({});setResults(null)}}>選択をクリア</button><button className="primary" onClick={runSelection}>PLを選定 <span>→</span></button></div>
+      </section> : results ? <section className="panel tab-panel results" id="results"><div className="section-heading"><div><span className="eyebrow">SELECTION RESULTS</span><h2>PL選定結果</h2><div className="legend"><i className="dot green"/>選定済み <i className="dot amber"/>複数候補 <i className="dot red"/>候補なし</div></div><div className="result-actions"><button className="secondary" onClick={()=>setWorkTab('specifications')}>← 仕様を変更</button><button className="secondary" onClick={()=>downloadCsv('PL選定結果.csv',exportResults(results))}>CSV出力</button></div></div>
+        <div className="toolbar"><span>⌕</span><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="ユニット名・PL品番・備考を検索"/><b>{filtered.length} ユニット</b></div>
+        <div className="table-wrap"><table><thead><tr><th>No.</th><th>ユニット名</th><th>選定されたPL品番</th><th>判定状態</th><th>備考</th></tr></thead><tbody>{filtered.map(r=><tr key={r.unit.no} className={r.status} onClick={()=>setActive(r)}><td>{r.unit.no}</td><td><button className="link">{r.unit.name}</button></td><td>{r.confirmedPartNumber ?? (r.status==='selected'?r.candidates[0].partNumber:r.status==='multiple'?r.candidates.map(c=>c.partNumber).join(' / '):'—')}</td><td><span className={`badge ${r.status}`}>{r.status==='selected'?'✓':'⚠'} {statusLabel[r.status]}</span>{r.missingSpecificationCodes.length>0&&<small className="missing">不足: {r.missingSpecificationCodes.map(code=>`${code} ${specs.find(s=>s.code===code)?.name??''}`).join('、')}</small>}</td><td>{r.unit.note}</td></tr>)}</tbody></table></div>
+      </section> : null}
+    </section> : <MasterPanel data={data} driveClientId={driveClientId} driveConnected={driveConnected} driveBusy={driveBusy} onDriveClientIdChange={setDriveClientId} onDriveConnect={connectDrive} onDriveSave={saveToDrive} onDriveLoad={loadFromDrive} onDriveDisconnect={()=>{disconnectGoogleDrive();setDriveConnected(false);setNotice('Google Driveとの接続を解除しました。')}} onReset={()=>updateData(sampleData)} onExport={(k)=>downloadCsv(`${k}.csv`,exportMaster(data,k))} onImport={(k)=>{setImportKind(k);setTimeout(()=>importRef.current?.click())}} />}</main>
+    <input hidden ref={importRef} type="file" accept=".csv,text/csv" onChange={e=>{onImport(e.target.files?.[0]);e.target.value=''}} />
+    {active && <Detail result={active} specs={data.specifications} onClose={()=>setActive(undefined)} onConfirm={confirmSelection}/>}<footer>ローカル保存: IndexedDB「{DB_NAME}」v{DB_VERSION}　｜　データはこのブラウザ内に保存されます</footer>
+  </div>;
+}
+
+function MasterPanel({data,driveClientId,driveConnected,driveBusy,onDriveClientIdChange,onDriveConnect,onDriveSave,onDriveLoad,onDriveDisconnect,onReset,onExport,onImport}:{data:MasterData;driveClientId:string;driveConnected:boolean;driveBusy:boolean;onDriveClientIdChange:(value:string)=>void;onDriveConnect:()=>void;onDriveSave:()=>void;onDriveLoad:()=>void;onDriveDisconnect:()=>void;onReset:()=>void;onExport:(k:MasterKind)=>void;onImport:(k:MasterKind)=>void}) {
+  const [selectedMaster, setSelectedMaster] = useState<MasterKind>('specifications');
+  const [masterSearch, setMasterSearch] = useState('');
+  const blocks: { key: MasterKind; title: string; description: string; count: number }[] = [
+    { key: 'specifications', title: '仕様項目マスター', description: '仕様コード・項目名・選択肢コード・表示順・備考', count: data.specifications.length },
+    { key: 'units', title: 'ユニットマスター', description: 'ユニットNo.・名称・表示順・備考', count: data.units.length },
+    { key: 'rules', title: 'PL選定条件マスター', description: 'PL品番・名称・仕様コードごとの適合条件', count: data.rules.length },
+  ];
+  const query = masterSearch.trim().toLowerCase();
+  const specifications = data.specifications.filter((item) => `${item.no} ${item.code} ${item.name} ${item.options.map((option)=>`${option.code} ${option.label}`).join(' ')} ${item.note}`.toLowerCase().includes(query));
+  const units = data.units.filter((item) => `${item.no} ${item.name} ${item.note}`.toLowerCase().includes(query));
+  const rules = data.rules.filter((item) => `${item.unitNo} ${item.partNumber} ${item.name} ${item.note} ${Object.values(item.conditions).join(' ')}`.toLowerCase().includes(query));
+  const selected = blocks.find((block) => block.key === selectedMaster)!;
+  return <section className="panel master-panel">
+    <div className="section-heading"><div><span className="eyebrow">MASTER DATA</span><h2>マスターデータ管理</h2><p>登録内容を確認し、CSVで一括更新できます。</p></div><button className="danger-outline" onClick={onReset}>サンプルに戻す</button></div>
+    <div className="master-grid">{blocks.map((block)=><article className={selectedMaster===block.key?'active':''} key={block.key} onClick={()=>setSelectedMaster(block.key)}>
+      <span className="file-icon">▤</span><h3>{block.title}</h3><p>{block.description}</p><strong>{block.count}<small> 件登録</small></strong>
+      <div><button className="secondary" onClick={(event)=>{event.stopPropagation();onImport(block.key)}}>CSV取込</button><button className="secondary" onClick={(event)=>{event.stopPropagation();onExport(block.key)}}>CSV出力</button><button className="view-master" onClick={()=>setSelectedMaster(block.key)}>内容を表示 →</button></div>
+    </article>)}</div>
+    <section className="master-content" aria-live="polite">
+      <div className="master-content-heading"><div><span className="eyebrow">REGISTERED DATA</span><h3>{selected.title}の登録内容</h3><p>{selected.count}件中 {selectedMaster==='specifications'?specifications.length:selectedMaster==='units'?units.length:rules.length}件を表示</p></div><label className="master-search"><span>⌕</span><input value={masterSearch} onChange={(event)=>setMasterSearch(event.target.value)} placeholder="表示中のマスターを検索" /></label></div>
+      <div className="master-table-wrap">
+        {selectedMaster==='specifications' && <table><thead><tr><th>仕様コード</th><th>仕様No.</th><th>仕様項目名</th><th>選択肢コード・表示名</th><th>備考</th></tr></thead><tbody>{specifications.map((item)=><tr key={item.code}><td><code>{item.code}</code></td><td>{item.no}</td><td><b>{item.name}</b></td><td><div className="option-list">{item.options.map((option)=><span key={option.code}><b>{option.code}</b> {option.label}</span>)}</div></td><td>{item.note||'—'}</td></tr>)}</tbody></table>}
+        {selectedMaster==='units' && <table><thead><tr><th>表示順</th><th>ユニットNo.</th><th>ユニット名</th><th>備考</th></tr></thead><tbody>{units.map((item)=><tr key={item.no}><td>{item.order}</td><td><code>{item.no}</code></td><td><b>{item.name}</b></td><td>{item.note||'—'}</td></tr>)}</tbody></table>}
+        {selectedMaster==='rules' && <table><thead><tr><th>ユニットNo.</th><th>PL品番</th><th>PL名称</th><th>適合条件（仕様コード）</th><th>備考</th></tr></thead><tbody>{rules.map((item)=><tr key={item.id}><td><code>{item.unitNo}</code></td><td><b>{item.partNumber}</b></td><td>{item.name}</td><td><div className="condition-list">{Object.entries(item.conditions).filter(([,value])=>value).map(([code,value])=><span key={code}><small>{code} {data.specifications.find((spec)=>spec.code===code)?.name??''}</small><b>{value}</b> {optionLabel(data.specifications,value)}</span>)}</div></td><td>{item.note||'—'}</td></tr>)}</tbody></table>}
+        {(selectedMaster==='specifications'?specifications.length:selectedMaster==='units'?units.length:rules.length)===0 && <div className="empty-master">該当するデータがありません。</div>}
+      </div>
+    </section>
+    <section className="drive-panel"><div className="drive-heading"><div className="drive-icon">G</div><div><span className="eyebrow">CLOUD BACKUP</span><h3>Google Drive保存</h3><p>3種類のマスターを1つのJSONファイルとして保存・復元します。</p></div><span className={`drive-status ${driveConnected?'connected':''}`}>{driveConnected?'● 接続済み':'○ 未接続'}</span></div>
+      {!driveConnected ? <div className="drive-connect"><label><span>Google OAuth クライアントID</span><input value={driveClientId} onChange={(event)=>onDriveClientIdChange(event.target.value)} placeholder="000000000000-xxxx.apps.googleusercontent.com" /></label><button className="drive-primary" disabled={driveBusy||!driveClientId.trim()} onClick={onDriveConnect}>{driveBusy?'接続中…':'Google Driveに接続'}</button></div> : <div className="drive-actions"><button className="drive-primary" disabled={driveBusy} onClick={onDriveSave}>{driveBusy?'処理中…':'現在のマスターを保存'}</button><button className="secondary" disabled={driveBusy} onClick={onDriveLoad}>Driveから読み込む</button><button className="text-button" disabled={driveBusy} onClick={onDriveDisconnect}>接続を解除</button></div>}
+      <p className="drive-note">Google Cloud ConsoleでDrive APIを有効にし、承認済みJavaScript生成元へこのアプリのURLを登録してください。権限はこのアプリが作成したファイルのみに限定されます。</p>
+    </section>
+    <div className="csv-help"><b>CSV取込について</b><p>CSV出力で得られるヘッダーと同じ形式で作成してください。取込時は対象マスターの登録内容を全件置き換えます。文字コードはUTF-8、選択肢は「|」区切りです。</p></div>
+  </section>;
+}
+function Detail({result,specs,onClose,onConfirm}:{result:UnitResult;specs:MasterData['specifications'];onClose:()=>void;onConfirm:(u:string,p:string)=>void}) { return <div className="overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><aside className="drawer"><button className="close" onClick={onClose}>×</button><span className="eyebrow">UNIT {result.unit.no}</span><h2>{result.unit.name}</h2><p>{result.unit.note}</p><div className={`summary ${result.status}`}>{statusLabel[result.status]}<b>{result.candidates.length} 件</b></div><h3>PL候補と判定詳細</h3>{result.nearCandidates.length===0?<p className="empty">このユニットにはPL条件が登録されていません。</p>:result.nearCandidates.map(c=><article className={`candidate ${result.candidates.some(x=>x.id===c.id)?'eligible':''}`} key={c.id}><div><b>{c.partNumber}</b><span>{c.name}</span></div>{result.status==='multiple'&&result.candidates.some(x=>x.id===c.id)&&<button onClick={()=>onConfirm(result.unit.no,c.partNumber)}>このPLを選択</button>}<p>{c.note||'備考なし'}</p><table><tbody>{c.details.map(d=><tr key={d.specificationCode}><td>{d.matched?'✓':d.missing?'!':'×'}</td><td>{d.specificationCode} {specs.find(s=>s.code===d.specificationCode)?.name??''}</td><td>条件: {d.expected} {optionLabel(specs,d.expected)}</td><td>選択: {d.actual?`${d.actual} ${optionLabel(specs,d.actual)}`:'未選択'}</td></tr>)}</tbody></table></article>)}</aside></div> }
+export default App;
