@@ -62,3 +62,7 @@ body{font-size:16px}.brand h1{font-size:23px}.brand p{font-size:13px}nav button{
 .selection-monitor>strong{min-width:155px;font-size:14px}.selection-monitor>button{min-width:220px;padding:11px 13px}.selection-monitor button small{font-size:12px}.selection-monitor button b{font-size:14px}.selection-monitor button i{font-size:11px}.selection-monitor>em{font-size:13px}
 .condition-list span{font-size:13px;line-height:1.55;white-space:normal}.condition-list small{font-size:11px;padding:5px 7px}.condition-list span b{font-size:13px;margin:0 4px}.match-mark{font-size:13px}
 .drawer h2{font-size:24px}.drawer>p,.candidate>div span,.candidate>p{font-size:13px}.drawer h3{font-size:17px}.summary{font-size:14px}.candidate table{font-size:13px}
+
+/* 上部ナビゲーションは右端へ離さず、アプリ名の横から左寄せで並べる */
+header{justify-content:flex-start}header nav{margin-left:48px;margin-right:0}
+@media(max-width:800px){header nav{margin-left:18px}}
