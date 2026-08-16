@@ -12,7 +12,7 @@ export type MasterKind = 'specifications' | 'units' | 'rules';
 export function exportMaster(data: MasterData, kind: MasterKind): string {
   if (kind === 'specifications') return toCsv([['仕様No.','仕様コード','仕様項目名','選択肢（コード=表示名、|区切り）','表示順','参照','備考'], ...data.specifications.map((x) => [String(x.no),x.code,x.name,x.options.map((option) => `${option.code}=${option.label}`).join('|'),String(x.order),x.reference,x.note])]);
   if (kind === 'units') return toCsv([['ユニットNo.','ユニット名','表示順','備考'], ...data.units.map((x) => [x.no,x.name,String(x.order),x.note])]);
-  const specificationCodes = data.specifications.map((x) => x.code); return toCsv([['ユニットNo.','PL品番','PL名称','備考',...specificationCodes], ...data.rules.map((x) => [x.unitNo,x.partNumber,x.name,x.note,...specificationCodes.map((code) => x.conditions[code] ?? '')])]);
+  const specificationCodes = data.specifications.map((x) => x.code); return toCsv([['ユニットNo.','PL品番','PL名称','備考','選定対象',...specificationCodes], ...data.rules.map((x) => [x.unitNo,x.partNumber,x.name,x.note,x.selectable?'1':'0',...specificationCodes.map((code) => (x.conditions[code]??[]).join('|'))])]);
 }
 export function importMaster(text: string, kind: MasterKind): Specification[] | Unit[] | PLRule[] {
   const [header, ...rows] = parseCsv(text); if (!header) throw new Error('CSVが空です。');
@@ -25,8 +25,11 @@ export function importMaster(text: string, kind: MasterKind): Specification[] | 
     return specifications;
   }
   if (kind === 'units') return rows.map((r) => ({ no:r[0], name:r[1], order:Number(r[2]), note:r[3]??'' }));
-  if (header.slice(4).some((value) => !/^S\d{3}$/.test(value))) throw new Error('PL選定条件の5列目以降はS001形式の仕様コードを指定してください。');
-  return rows.map((r, i) => ({ id:`csv-${Date.now()}-${i}`, unitNo:r[0], partNumber:r[1], name:r[2], note:r[3]??'', conditions:Object.fromEntries(header.slice(4).map((code,j) => [code,r[j+4]??'']).filter(([,v]) => v)) }));
+  if (header.slice(5).some((value) => !/^S\d{3}$/.test(value))) throw new Error('PL選定条件の6列目以降はS001形式の仕様コードを指定してください。');
+  const imported = rows.map((r, i) => ({ id:`csv-${Date.now()}-${i}`, unitNo:r[0], partNumber:r[1], name:r[2], note:r[3]??'', selectable:r[4]!=='0', conditions:Object.fromEntries(header.slice(5).map((code,j) => [code,(r[j+5]??'').split('|').filter(Boolean)]).filter(([,values]) => values.length>0)) }));
+  const keys = imported.map((rule) => `${rule.unitNo}\u0000${rule.partNumber}`);
+  if (new Set(keys).size !== keys.length) throw new Error('同じユニット内でPL品番が重複しています。条件は「|」区切りで1行にまとめてください。');
+  return imported;
 }
 export function exportResults(results: UnitResult[]): string { return toCsv([['No.','ユニット名','選定PL品番','判定状態','備考'], ...results.map((r) => [r.unit.no,r.unit.name,r.confirmedPartNumber ?? (r.status === 'selected' ? r.candidates[0].partNumber : r.candidates.map((x) => x.partNumber).join(' / ')),r.status === 'selected'?'選定済み':r.status === 'multiple'?'複数候補あり':'候補なし',r.unit.note])]); }
 export function downloadCsv(name: string, content: string) { const url = URL.createObjectURL(new Blob([content], { type:'text/csv;charset=utf-8' })); const a=document.createElement('a'); a.href=url; a.download=name; a.click(); URL.revokeObjectURL(url); }

@@ -30,4 +30,10 @@ describe('sample master data', () => {
       '360', '370', '400', '420', '421', '500', '600', '700', '710', '900', '140', '390', '720',
     ]);
   });
+
+  it('PL品番はユニット内でユニークに保持する', () => {
+    const keys = sampleData.rules.map((rule) => `${rule.unitNo}:${rule.partNumber}`);
+    expect(new Set(keys).size).toBe(keys.length);
+    expect(sampleData.rules.find((rule) => rule.partNumber === 'HH11101B10')?.conditions.S001).toEqual(['S001-8', 'S001-9', 'S001-10']);
+  });
 });
