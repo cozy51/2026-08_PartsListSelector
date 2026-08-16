@@ -59,4 +59,29 @@ describe('sample master data', () => {
     expect(coreRules.find((rule) => rule.partNumber === 'HH11201010')?.conditions.S001).toEqual(['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6']);
     expect(coreRules.find((rule) => rule.partNumber === 'HH112A0010')?.conditions.S001).toEqual(['S001-13']);
   });
+
+  it('DIVERGE UNIT(R)(350X)の29行を9件のユニークPLに統合する', () => {
+    const divergeRules = sampleData.rules.filter((rule) => rule.unitNo === '131');
+    expect(divergeRules.map((rule) => rule.partNumber)).toEqual(['HH11301B10','HH11302B10','HH11304B10','HH11305B10','HH3130GM10','HH11311B10','HH11314B10','HH11306B10','HH11307B10']);
+    expect(divergeRules.find((rule) => rule.partNumber === 'HH3130GM10')?.conditions).toMatchObject({ S013:['S013-1'],S040:['S040-2'],S039:['S039-1'] });
+    expect(divergeRules.find((rule) => rule.partNumber === 'HH11314B10')?.conditions).toMatchObject({ S013:['S013-3'],S040:['S040-1'],S039:['S039-2'] });
+    expect(divergeRules.find((rule) => rule.partNumber === 'HH11306B10')?.conditions.S001).toEqual(['S001-7']);
+  });
+
+  it('DIVERGE UNIT(F)(350X)の30行を8件のユニークPLに統合する', () => {
+    const divergeRules = sampleData.rules.filter((rule) => rule.unitNo === '130');
+    expect(divergeRules.map((rule) => rule.partNumber)).toEqual(['HH11301F10','HH11302F10','HH11304F10','HH11305F10','HH11311F10','HH11314F10','HH3131K810','HH3130NP10']);
+    expect(divergeRules.find((rule) => rule.partNumber === 'HH11301F10')?.conditions.S001).toEqual(['S001-7','S001-8','S001-9','S001-10']);
+    expect(divergeRules.find((rule) => rule.partNumber === 'HH11314F10')?.conditions).toMatchObject({S013:['S013-3'],S039:['S039-2']});
+    expect(divergeRules.filter((rule) => !rule.selectable).map((rule) => rule.partNumber)).toEqual(['HH3131K810','HH3130NP10']);
+  });
+
+  it('HOIST GEAR BOX(350X)の31行を6件のユニークPLに統合する', () => {
+    const hoistRules = sampleData.rules.filter((rule) => rule.unitNo === '200');
+    expect(hoistRules.map((rule) => rule.partNumber)).toEqual(['HH12000010','HH12000110','HH12000210','HH3201SG10','* NO USE','HH120A0010']);
+    expect(hoistRules.find((rule) => rule.partNumber === 'HH12000010')?.conditions).toMatchObject({S051:['S051-2'],S055:['S055-1']});
+    expect(hoistRules.find((rule) => rule.partNumber === 'HH3201SG10')?.conditions).toMatchObject({S001:['S001-9','S001-10'],S051:['S051-3'],S055:['S055-2']});
+    expect(hoistRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(hoistRules.find((rule) => rule.partNumber === 'HH120A0010')?.conditions.S001).toEqual(['S001-11']);
+  });
 });

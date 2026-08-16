@@ -57,6 +57,12 @@ CSVはUTF-8（出力時はExcelで判別しやすいBOM付き）です。値に�
 
 CORE UNIT (350X)（ユニットNo.120）は、提示されたExcel 11行を型式条件ごとにまとめ、`HH11200010`、`HH11201010`、`HH112A0010`の3件のユニークPLとして登録しています。
 
+DIVERGE UNIT(R)(350X)（ユニットNo.131）は、提示されたExcel 29行を型式・直動ガイド・CDS反射板のエポキシ固定・分岐切替カム材質の条件でまとめ、9件のユニークPLとして登録しています。
+
+DIVERGE UNIT(F)(350X)（ユニットNo.130）は、提示されたExcel 30行を型式・直動ガイド・分岐切替カム材質の条件でまとめ、選定対象6件と標準展開済み2件の合計8件のユニークPLとして登録しています。
+
+HOIST GEAR BOX(350X)（ユニットNo.200）は、提示されたExcel 31行を型式・昇降アイドラ・フランジ押さえ発塵対策の条件でまとめ、選定対象5件とNO USE 1件の合計6件のユニークPLとして登録しています。
+
 初期確認用ファイルは [`public/samples/specifications.csv`](public/samples/specifications.csv)、[`public/samples/units.csv`](public/samples/units.csv)、[`public/samples/rules.csv`](public/samples/rules.csv) にあります。
 
 ## PL選定ルール

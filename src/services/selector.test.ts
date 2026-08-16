@@ -24,4 +24,42 @@ describe('selectParts', () => {
     expect(result?.status).toBe('selected');
     expect(result?.candidates.map((candidate) => candidate.partNumber)).toEqual([partNumber]);
   });
+  it.each([
+    [{S001:'S001-8',S013:'S013-1',S040:'S040-1',S039:'S039-1'},'HH11301B10'],
+    [{S001:'S001-1',S013:'S013-3',S040:'S040-1',S039:'S039-2'},'HH11305B10'],
+    [{S001:'S001-9',S013:'S013-1',S040:'S040-2',S039:'S039-1'},'HH3130GM10'],
+    [{S001:'S001-8',S013:'S013-3',S040:'S040-1',S039:'S039-2'},'HH11314B10'],
+    [{S001:'S001-7',S013:'S013-1',S040:'S040-1',S039:'S039-1'},'HH11307B10'],
+  ])('DIVERGE UNIT(R)(350X)の条件から%sを一意に選定する', (selection,partNumber) => {
+    const result = selectParts(sampleData,selection).find((item) => item.unit.no === '131');
+    expect(result?.status).toBe('selected');
+    expect(result?.candidates.map((candidate) => candidate.partNumber)).toEqual([partNumber]);
+  });
+  it.each([
+    [{S001:'S001-7',S013:'S013-1',S039:'S039-1'},'HH11301F10'],
+    [{S001:'S001-1',S013:'S013-1',S039:'S039-2'},'HH11302F10'],
+    [{S001:'S001-10',S013:'S013-3',S039:'S039-1'},'HH11304F10'],
+    [{S001:'S001-6',S013:'S013-3',S039:'S039-2'},'HH11305F10'],
+    [{S001:'S001-8',S013:'S013-1',S039:'S039-2'},'HH11311F10'],
+    [{S001:'S001-9',S013:'S013-3',S039:'S039-2'},'HH11314F10'],
+  ])('DIVERGE UNIT(F)(350X)の条件から%sを一意に選定する', (selection,partNumber) => {
+    const result = selectParts(sampleData,selection).find((item) => item.unit.no === '130');
+    expect(result?.status).toBe('selected');
+    expect(result?.candidates.map((candidate) => candidate.partNumber)).toEqual([partNumber]);
+  });
+  it.each([
+    [{S001:'S001-1',S051:'S051-2',S055:'S055-1'},'HH12000010'],
+    [{S001:'S001-8',S051:'S051-1',S055:'S055-1'},'HH12000110'],
+    [{S001:'S001-10',S051:'S051-3',S055:'S055-1'},'HH12000210'],
+    [{S001:'S001-9',S051:'S051-3',S055:'S055-2'},'HH3201SG10'],
+    [{S001:'S001-11',S051:'S051-3',S055:'S055-1'},'HH120A0010'],
+  ])('HOIST GEAR BOX(350X)の条件から%sを一意に選定する', (selection,partNumber) => {
+    const result = selectParts(sampleData,selection).find((item) => item.unit.no === '200');
+    expect(result?.status).toBe('selected');
+    expect(result?.candidates.map((candidate) => candidate.partNumber)).toEqual([partNumber]);
+  });
+  it('HOIST GEAR BOX(350X)のNO USEは候補にしない', () => {
+    const result = selectParts(sampleData,{S001:'S001-7'}).find((item) => item.unit.no === '200');
+    expect(result?.candidates).toHaveLength(0);
+  });
 });
