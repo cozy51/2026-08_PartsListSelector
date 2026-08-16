@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { sampleData } from './data/sample';
 import { exportMaster, exportResults, importMaster, downloadCsv, type MasterKind } from './services/csv';
 import { selectParts } from './services/selector';
@@ -11,13 +12,16 @@ const optionLabel = (specifications: MasterData['specifications'], optionCode: s
 function ConditionChip({ code, values, specifications, selectedValue }:{ code:string; values:string[]; specifications:MasterData['specifications']; selectedValue?:string }) {
   const [tooltip, setTooltip] = useState<{left:number;top:number}>();
   const specification = specifications.find((item) => item.code === code);
-  const allowed = values.map((value) => `${value} ${optionLabel(specifications,value)}`).join(' / ');
-  const selected = selectedValue ? `${selectedValue} ${optionLabel(specifications,selectedValue)}` : '未選択';
+  const allowedOptions = values.map((value) => ({code:value,label:optionLabel(specifications,value)}));
+  const allowed = allowedOptions.map((option) => `${option.code} ${option.label}`).join(' / ');
+  const selectedLabel = selectedValue ? optionLabel(specifications,selectedValue) : '';
+  const selected = selectedValue ? `${selectedValue} ${selectedLabel}` : '未選択';
   const status = !selectedValue ? 'pending' : values.includes(selectedValue) ? 'matched' : 'mismatched';
+  const statusText = status==='matched' ? '✓ 現在の選択と一致' : status==='mismatched' ? '× 現在の選択と不一致' : '! 仕様が未選択';
   const showTooltip = (element: HTMLElement) => { const rect=element.getBoundingClientRect(); setTooltip({left:Math.max(12,Math.min(rect.left,window.innerWidth-472)),top:rect.bottom+150<window.innerHeight?rect.bottom+10:Math.max(12,rect.top-140)}); };
   return <span className={`condition-chip ${status}`} tabIndex={0} aria-label={`${code} ${specification?.name??''}、適合条件 ${allowed}、現在の選択 ${selected}`} onMouseEnter={(event)=>showTooltip(event.currentTarget)} onMouseLeave={()=>setTooltip(undefined)} onFocus={(event)=>showTooltip(event.currentTarget)} onBlur={()=>setTooltip(undefined)}>
-    <small>{code} {specification?.name??''}</small><b>{values.join(' / ')}</b> {values.map((value)=>optionLabel(specifications,value)).join(' / ')}
-    {tooltip&&<span className="condition-tooltip" role="tooltip" style={{left:tooltip.left,top:tooltip.top}}><strong>{code}　{specification?.name??'仕様名未登録'}</strong><span>適合条件：{allowed}</span><span>現在の選択：{selected}</span></span>}
+    <small>{code} {specification?.name??''}</small><span className="condition-values">{allowedOptions.map((option)=><span className="condition-value" key={option.code}><b>{option.code}</b><span>{option.label}</span></span>)}</span><span className="condition-result">{status==='matched'?'✓ 一致':status==='mismatched'?'× 不一致':'! 未選択'}</span>
+    {tooltip&&createPortal(<span className={`condition-tooltip ${status}`} role="tooltip" style={{left:tooltip.left,top:tooltip.top}}><span className="tooltip-heading"><strong>{code}　{specification?.name??'仕様名未登録'}</strong><b className="tooltip-status">{statusText}</b></span><span className="tooltip-section"><b>適合条件</b>{allowedOptions.map((option)=><span className="tooltip-value" key={option.code}><code>{option.code}</code><span>{option.label}</span></span>)}</span><span className="tooltip-section current"><b>現在の選択</b>{selectedValue?<span className="tooltip-value"><code>{selectedValue}</code><span>{selectedLabel}</span></span>:<em>未選択</em>}</span></span>,document.body)}
   </span>;
 }
 function App() {
