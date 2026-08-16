@@ -4,6 +4,8 @@ const GIS_URL = 'https://accounts.google.com/gsi/client';
 const DRIVE_API = 'https://www.googleapis.com/drive/v3/files';
 const UPLOAD_API = 'https://www.googleapis.com/upload/drive/v3/files';
 export const DRIVE_FILE_NAME = 'PartsListSelector-master.json';
+export const DRIVE_PARENT_FOLDER = 'WebAppsData';
+export const DRIVE_APP_FOLDER = 'PartsListSelector';
 export const GOOGLE_CLIENT_ID_KEY = 'parts-list-selector-google-client-id';
 
 type TokenResponse = { access_token?: string; error?: string; error_description?: string };
@@ -11,6 +13,7 @@ type TokenClient = { requestAccessToken: (options?: { prompt?: string }) => void
 type GoogleIdentity = { accounts: { oauth2: { initTokenClient: (config: { client_id: string; scope: string; callback: (response: TokenResponse) => void; error_callback: () => void }) => TokenClient } } };
 type DriveFile = { id: string; name: string; modifiedTime?: string };
 type DriveList = { files?: DriveFile[] };
+export type DriveMasterBackup = { data: MasterData; modifiedTime?: string };
 
 declare global { interface Window { google?: GoogleIdentity } }
 
@@ -53,25 +56,55 @@ async function driveFetch(url: string, init?: RequestInit): Promise<Response> {
   return response;
 }
 
-async function findMasterFile(): Promise<DriveFile | undefined> {
-  const query = encodeURIComponent(`name='${DRIVE_FILE_NAME}' and trashed=false and appProperties has { key='partsListSelector' and value='master' }`);
+async function findFolder(name: string, marker: string, parentId?: string): Promise<DriveFile | undefined> {
+  const parentQuery = parentId ? ` and '${parentId}' in parents` : '';
+  const query = encodeURIComponent(`name='${name}' and mimeType='application/vnd.google-apps.folder' and trashed=false${parentQuery} and appProperties has { key='partsListSelectorFolder' and value='${marker}' }`);
+  const response = await driveFetch(`${DRIVE_API}?q=${query}&fields=files(id,name)&pageSize=1`);
+  return ((await response.json()) as DriveList).files?.[0];
+}
+
+async function createFolder(name: string, marker: string, parentId?: string): Promise<DriveFile> {
+  const response = await driveFetch(`${DRIVE_API}?fields=id,name`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder', parents: parentId ? [parentId] : undefined, appProperties: { partsListSelectorFolder: marker } }) });
+  return (await response.json()) as DriveFile;
+}
+
+async function getAppFolder(create: boolean): Promise<DriveFile | undefined> {
+  const parent = await findFolder(DRIVE_PARENT_FOLDER,'webAppsData') ?? (create ? await createFolder(DRIVE_PARENT_FOLDER,'webAppsData') : undefined);
+  if (!parent) return undefined;
+  return await findFolder(DRIVE_APP_FOLDER,'partsListSelector',parent.id) ?? (create ? await createFolder(DRIVE_APP_FOLDER,'partsListSelector',parent.id) : undefined);
+}
+
+async function findMasterFile(folderId: string): Promise<DriveFile | undefined> {
+  const query = encodeURIComponent(`name='${DRIVE_FILE_NAME}' and '${folderId}' in parents and trashed=false and appProperties has { key='partsListSelector' and value='master' }`);
   const response = await driveFetch(`${DRIVE_API}?q=${query}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc&pageSize=1`);
   return ((await response.json()) as DriveList).files?.[0];
 }
 
 export async function saveMasterToGoogleDrive(data: MasterData): Promise<string> {
-  const existing = await findMasterFile();
-  const metadata = existing ? {} : { name: DRIVE_FILE_NAME, mimeType: 'application/json', appProperties: { partsListSelector: 'master' } };
+  const folder = await getAppFolder(true);
+  if (!folder) throw new Error('Google Driveの保存先フォルダを作成できませんでした。');
+  const existing = await findMasterFile(folder.id);
+  const metadata = existing ? {} : { name: DRIVE_FILE_NAME, mimeType: 'application/json', parents: [folder.id], appProperties: { partsListSelector: 'master' } };
   const form = new FormData(); form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' })); form.append('file', new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
   const url = existing ? `${UPLOAD_API}/${existing.id}?uploadType=multipart&fields=id,name,modifiedTime` : `${UPLOAD_API}?uploadType=multipart&fields=id,name,modifiedTime`;
   const response = await driveFetch(url, { method: existing ? 'PATCH' : 'POST', body: form });
   return ((await response.json()) as DriveFile).modifiedTime ?? new Date().toISOString();
 }
 
-export async function loadMasterFromGoogleDrive(): Promise<MasterData> {
-  const file = await findMasterFile();
-  if (!file) throw new Error(`Google Driveに「${DRIVE_FILE_NAME}」がありません。`);
-  return (await (await driveFetch(`${DRIVE_API}/${file.id}?alt=media`)).json()) as MasterData;
+async function readMasterFile(file: DriveFile): Promise<DriveMasterBackup> {
+  return { data: (await (await driveFetch(`${DRIVE_API}/${file.id}?alt=media`)).json()) as MasterData, modifiedTime: file.modifiedTime };
+}
+
+export async function getGoogleDriveBackupInfo(): Promise<DriveMasterBackup | undefined> {
+  const folder = await getAppFolder(false);
+  const file = folder ? await findMasterFile(folder.id) : undefined;
+  return file ? readMasterFile(file) : undefined;
+}
+
+export async function loadMasterFromGoogleDrive(): Promise<DriveMasterBackup> {
+  const backup = await getGoogleDriveBackupInfo();
+  if (!backup) throw new Error(`Google Driveの「${DRIVE_PARENT_FOLDER}/${DRIVE_APP_FOLDER}」に「${DRIVE_FILE_NAME}」がありません。`);
+  return backup;
 }
 
 export function disconnectGoogleDrive(): void { accessToken = ''; }
