@@ -1,7 +1,7 @@
 import type { MasterData } from '../types';
 export const DB_NAME = 'parts-list-selector';
-// v2: 仕様No.方式。v3: 選定対象ユニットマスターを提示一覧へ更新。
-export const DB_VERSION = 3;
+// v4: 仕様をS001、選択肢をS001-1形式のコードで管理。
+export const DB_VERSION = 4;
 const STORE = 'master';
 
 function openDb(): Promise<IDBDatabase> {
@@ -9,7 +9,7 @@ function openDb(): Promise<IDBDatabase> {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = (event) => {
       if (!request.result.objectStoreNames.contains(STORE)) request.result.createObjectStore(STORE);
-      else if (event.oldVersion < 3) request.transaction?.objectStore(STORE).delete('data');
+      else if (event.oldVersion < 4) request.transaction?.objectStore(STORE).delete('data');
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);

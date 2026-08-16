@@ -52,7 +52,12 @@ const specificationSeeds: SpecificationSeed[] = [
   ['直線車間センサ','',['01:内製','02:SICK']], ['反射シール調整幅変更','',['ZZ:無','YY:有']], ['ラテラルベルト長さ変更','',['ZZ:無','YY:有']],
 ];
 
-const specifications: Specification[] = specificationSeeds.map(([name, reference, options], index) => ({ no: index + 1, name, options, order: index + 1, note: reference ? `参照: ${reference}` : '' }));
+const removeLegacyPrefix = (value: string) => value.replace(/^[^:：]+[:：]/, '').trim();
+const specifications: Specification[] = specificationSeeds.map(([name, reference, options], index) => {
+  const no = index + 1;
+  const code = `S${String(no).padStart(3, '0')}`;
+  return { no, code, name, options: options.map((label, optionIndex) => ({ code: `${code}-${optionIndex + 1}`, label: removeLegacyPrefix(label) })), order: no, note: reference ? `参照: ${reference}` : '' };
+});
 
 export const sampleData: MasterData = {
   specifications,
@@ -86,15 +91,15 @@ export const sampleData: MasterData = {
     { no: '720', name: 'LOGO STICKER(客先)', order: 27, note: '' },
   ],
   rules: [
-    { id:'r1',unitNo:'100',partNumber:'HH11101B10',name:'ドライブギアボックス F',note:'F型用',conditions:{'1':'SRC350-M2-3X-F','13':'01:IKO'}},
-    { id:'r2',unitNo:'100',partNumber:'HH11102B10',name:'ドライブギアボックス R',note:'R型用',conditions:{'1':'SRC350-M2-3X-R','13':'01:IKO'}},
-    { id:'r3',unitNo:'110',partNumber:'HH21101A10',name:'ステアリング標準',note:'標準搬送',conditions:{'7':'01:FOUP','8':'10:～10 kg'}},
-    { id:'r4',unitNo:'110',partNumber:'HH21102A10',name:'ステアリング重量対応',note:'重量対応品',conditions:{'7':'01:FOUP','8':'20:～20 kg'}},
-    { id:'r5',unitNo:'130',partNumber:'HH31101C10',name:'分岐ガイド標準A',note:'標準候補A',conditions:{'14':'01:標準','3':'01:CW'}},
-    { id:'r6',unitNo:'130',partNumber:'HH31102C10',name:'分岐ガイド標準B',note:'要設計確認',conditions:{'14':'01:標準','3':'01:CW'}},
-    { id:'r7',unitNo:'200',partNumber:'HH41101D10',name:'ホイスト ST2800',note:'',conditions:{'16':'28:～ST2800'}},
-    { id:'r8',unitNo:'200',partNumber:'HH41102D10',name:'ホイスト ST4200',note:'',conditions:{'16':'42:～ST4200'}},
-    { id:'r9',unitNo:'700',partNumber:'HH71101H10',name:'RFID縦カバー',note:'タグ干渉を確認',conditions:{'19':'01:タグ方向：縦(垂直)'}},
-    { id:'r10',unitNo:'700',partNumber:'HH71102H10',name:'RFID横カバー',note:'',conditions:{'19':'02:タグ方向：横(水平)'}},
+    { id:'r1',unitNo:'100',partNumber:'HH11101B10',name:'ドライブギアボックス F',note:'F型用',conditions:{S001:'S001-1',S013:'S013-1'}},
+    { id:'r2',unitNo:'100',partNumber:'HH11102B10',name:'ドライブギアボックス R',note:'R型用',conditions:{S001:'S001-2',S013:'S013-1'}},
+    { id:'r3',unitNo:'110',partNumber:'HH21101A10',name:'ステアリング標準',note:'標準搬送',conditions:{S007:'S007-1',S008:'S008-1'}},
+    { id:'r4',unitNo:'110',partNumber:'HH21102A10',name:'ステアリング重量対応',note:'重量対応品',conditions:{S007:'S007-1',S008:'S008-4'}},
+    { id:'r5',unitNo:'130',partNumber:'HH31101C10',name:'分岐ガイド標準A',note:'標準候補A',conditions:{S014:'S014-1',S003:'S003-1'}},
+    { id:'r6',unitNo:'130',partNumber:'HH31102C10',name:'分岐ガイド標準B',note:'要設計確認',conditions:{S014:'S014-1',S003:'S003-1'}},
+    { id:'r7',unitNo:'200',partNumber:'HH41101D10',name:'ホイスト ST2800',note:'',conditions:{S016:'S016-1'}},
+    { id:'r8',unitNo:'200',partNumber:'HH41102D10',name:'ホイスト ST4200',note:'',conditions:{S016:'S016-2'}},
+    { id:'r9',unitNo:'700',partNumber:'HH71101H10',name:'RFID縦カバー',note:'タグ干渉を確認',conditions:{S019:'S019-1'}},
+    { id:'r10',unitNo:'700',partNumber:'HH71102H10',name:'RFID横カバー',note:'',conditions:{S019:'S019-2'}},
   ],
 };
