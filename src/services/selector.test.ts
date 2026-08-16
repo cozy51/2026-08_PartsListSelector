@@ -3,7 +3,7 @@ import { selectParts } from './selector';
 import type { MasterData } from '../types';
 
 const base: MasterData = { specifications: [{ no: 1, code: 'S001', name: '仕様A', options: [{ code: 'S001-1', label: 'x' }, { code: 'S001-2', label: 'y' }], order: 1, reference: '', note: '' }], units: [{ no: '1', name: 'Unit', order: 1, note: '' }], rules: [] };
-const rule = (id: string, value: string) => ({ id, unitNo: '1', partNumber: id, name: id, note: '', selectable: true, conditions: { S001: [value] } });
+const rule = (id: string, value: string) => ({ id, unitNo: '1', partNumber: id, note: '', selectable: true, conditions: { S001: [value] } });
 describe('selectParts', () => {
   it('一致が1件なら選定済み', () => expect(selectParts({ ...base, rules: [rule('PL1', 'S001-1')] }, { S001: 'S001-1' })[0].status).toBe('selected'));
   it('一致が0件なら候補なし', () => expect(selectParts({ ...base, rules: [rule('PL1', 'S001-1')] }, { S001: 'S001-2' })[0].status).toBe('none'));

@@ -1,7 +1,7 @@
 import type { MasterData } from '../types';
 export const DB_NAME = 'parts-list-selector';
-// v7: PLをユニット内で一意化し、条件ごとに複数の許容値を保持。
-export const DB_VERSION = 7;
+// v8: 元ExcelのPL品番隣列を「PL名称」ではなく「備考」として保持。
+export const DB_VERSION = 8;
 const STORE = 'master';
 
 function openDb(): Promise<IDBDatabase> {
@@ -9,7 +9,7 @@ function openDb(): Promise<IDBDatabase> {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = (event) => {
       if (!request.result.objectStoreNames.contains(STORE)) request.result.createObjectStore(STORE);
-      else if (event.oldVersion < 7) request.transaction?.objectStore(STORE).delete('data');
+      else if (event.oldVersion < 8) request.transaction?.objectStore(STORE).delete('data');
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);

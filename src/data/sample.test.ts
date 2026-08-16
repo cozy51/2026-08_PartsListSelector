@@ -35,5 +35,7 @@ describe('sample master data', () => {
     const keys = sampleData.rules.map((rule) => `${rule.unitNo}:${rule.partNumber}`);
     expect(new Set(keys).size).toBe(keys.length);
     expect(sampleData.rules.find((rule) => rule.partNumber === 'HH11101B10')?.conditions.S001).toEqual(['S001-8', 'S001-9', 'S001-10']);
+    expect(sampleData.rules.some((rule) => 'name' in rule)).toBe(false);
+    expect(sampleData.rules.find((rule) => rule.partNumber === 'HH11101B10')?.note).toBe('ダイカスト化');
   });
 });
