@@ -1,7 +1,7 @@
 import type { MasterData } from '../types';
 export const DB_NAME = 'parts-list-selector';
-// v5: 66仕様の参照コードと選択判断用の備考を分離して保持。
-export const DB_VERSION = 5;
+// v6: Excel原文に合わせてNo.1～66の選択備考を更新。
+export const DB_VERSION = 6;
 const STORE = 'master';
 
 function openDb(): Promise<IDBDatabase> {
@@ -9,7 +9,7 @@ function openDb(): Promise<IDBDatabase> {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = (event) => {
       if (!request.result.objectStoreNames.contains(STORE)) request.result.createObjectStore(STORE);
-      else if (event.oldVersion < 5) request.transaction?.objectStore(STORE).delete('data');
+      else if (event.oldVersion < 6) request.transaction?.objectStore(STORE).delete('data');
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);

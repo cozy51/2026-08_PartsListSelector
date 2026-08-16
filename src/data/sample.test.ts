@@ -20,6 +20,8 @@ describe('sample master data', () => {
     expect(cleaningVehicle?.reference).toBe('MW01');
     expect(cleaningVehicle?.note).toContain('クリーニングビークル以外');
     expect(sampleData.specifications.every((specification) => typeof specification.note === 'string')).toBe(true);
+    expect(sampleData.specifications.find((specification) => specification.code === 'S008')?.note).toContain('\nその他の搬送物');
+    expect(sampleData.specifications.find((specification) => specification.code === 'S054')?.note).toBe('基本的には「無し」（？？？');
   });
 
   it('提示されたユニットを指定順で保持する', () => {

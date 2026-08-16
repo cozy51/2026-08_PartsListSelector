@@ -40,7 +40,7 @@
 
 /* 選択欄の右側で、Excel由来の判断ポイントを常に確認できる */
 .spec-row{grid-template-columns:58px minmax(210px,.65fr) minmax(310px,.8fr) minmax(330px,1fr);gap:0 18px}
-.spec-note{align-self:stretch;display:flex;align-items:center;gap:9px;padding:10px 14px;border-left:3px solid #d8a022;background:#fff9e8;color:#4c5861;font-size:11px;line-height:1.7}
+.spec-note{align-self:stretch;display:flex;align-items:center;gap:9px;padding:10px 14px;border-left:3px solid #d8a022;background:#fff9e8;color:#4c5861;font-size:11px;line-height:1.7;white-space:pre-line}
 .spec-note b{flex:0 0 auto;border-radius:3px;background:#f7df9f;color:#76520e;padding:2px 6px;font-size:9px}.spec-note.empty{border-left-color:#dce3e8;background:#f8fafb;color:#a0a9af}
 @media(max-width:1050px){.spec-row{grid-template-columns:50px minmax(190px,.7fr) minmax(270px,1fr)}.spec-note{grid-column:2/4;margin:0 0 10px}}
 @media(max-width:800px){.spec-row{grid-template-columns:35px 1fr;gap:0 8px}.spec-row select,.spec-note{grid-column:2}.spec-note{margin-bottom:12px}}
