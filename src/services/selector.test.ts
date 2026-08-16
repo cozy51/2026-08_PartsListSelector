@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { selectParts } from './selector';
 import type { MasterData } from '../types';
 
-const base: MasterData = { specifications: [{ no: 1, code: 'S001', name: '仕様A', options: [{ code: 'S001-1', label: 'x' }, { code: 'S001-2', label: 'y' }], order: 1, note: '' }], units: [{ no: '1', name: 'Unit', order: 1, note: '' }], rules: [] };
+const base: MasterData = { specifications: [{ no: 1, code: 'S001', name: '仕様A', options: [{ code: 'S001-1', label: 'x' }, { code: 'S001-2', label: 'y' }], order: 1, reference: '', note: '' }], units: [{ no: '1', name: 'Unit', order: 1, note: '' }], rules: [] };
 const rule = (id: string, value: string) => ({ id, unitNo: '1', partNumber: id, name: id, note: '', conditions: { S001: value } });
 describe('selectParts', () => {
   it('一致が1件なら選定済み', () => expect(selectParts({ ...base, rules: [rule('PL1', 'S001-1')] }, { S001: 'S001-1' })[0].status).toBe('selected'));

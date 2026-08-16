@@ -1,5 +1,5 @@
 export type SpecificationOption = { code: string; label: string };
-export type Specification = { no: number; code: string; name: string; options: SpecificationOption[]; order: number; note: string };
+export type Specification = { no: number; code: string; name: string; options: SpecificationOption[]; order: number; reference: string; note: string };
 export type Unit = { no: string; name: string; order: number; note: string };
 export type PLRule = { id: string; unitNo: string; partNumber: string; name: string; note: string; conditions: Record<string, string> };
 export type MasterData = { specifications: Specification[]; units: Unit[]; rules: PLRule[] };

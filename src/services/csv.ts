@@ -10,14 +10,14 @@ export function parseCsv(text: string): string[][] {
 }
 export type MasterKind = 'specifications' | 'units' | 'rules';
 export function exportMaster(data: MasterData, kind: MasterKind): string {
-  if (kind === 'specifications') return toCsv([['仕様No.','仕様コード','仕様項目名','選択肢（コード=表示名、|区切り）','表示順','備考'], ...data.specifications.map((x) => [String(x.no),x.code,x.name,x.options.map((option) => `${option.code}=${option.label}`).join('|'),String(x.order),x.note])]);
+  if (kind === 'specifications') return toCsv([['仕様No.','仕様コード','仕様項目名','選択肢（コード=表示名、|区切り）','表示順','参照','備考'], ...data.specifications.map((x) => [String(x.no),x.code,x.name,x.options.map((option) => `${option.code}=${option.label}`).join('|'),String(x.order),x.reference,x.note])]);
   if (kind === 'units') return toCsv([['ユニットNo.','ユニット名','表示順','備考'], ...data.units.map((x) => [x.no,x.name,String(x.order),x.note])]);
   const specificationCodes = data.specifications.map((x) => x.code); return toCsv([['ユニットNo.','PL品番','PL名称','備考',...specificationCodes], ...data.rules.map((x) => [x.unitNo,x.partNumber,x.name,x.note,...specificationCodes.map((code) => x.conditions[code] ?? '')])]);
 }
 export function importMaster(text: string, kind: MasterKind): Specification[] | Unit[] | PLRule[] {
   const [header, ...rows] = parseCsv(text); if (!header) throw new Error('CSVが空です。');
   if (kind === 'specifications') {
-    const specifications = rows.map((r) => ({ no:Number(r[0]), code:r[1], name:r[2], options:(r[3]??'').split('|').filter(Boolean).map((entry) => { const separator=entry.indexOf('='); if(separator<1) throw new Error('選択肢は「S001-1=表示名」の形式で入力してください。'); return { code:entry.slice(0,separator), label:entry.slice(separator+1) }; }), order:Number(r[4]), note:r[5]??'' }));
+    const specifications = rows.map((r) => ({ no:Number(r[0]), code:r[1], name:r[2], options:(r[3]??'').split('|').filter(Boolean).map((entry) => { const separator=entry.indexOf('='); if(separator<1) throw new Error('選択肢は「S001-1=表示名」の形式で入力してください。'); return { code:entry.slice(0,separator), label:entry.slice(separator+1) }; }), order:Number(r[4]), reference:r[5]??'', note:r[6]??'' }));
     if (specifications.some((item) => !Number.isInteger(item.no) || item.no < 1)) throw new Error('仕様No.は1以上の整数で入力してください。');
     if (new Set(specifications.map((item) => item.no)).size !== specifications.length) throw new Error('仕様No.が重複しています。');
     if (specifications.some((item) => item.code !== `S${String(item.no).padStart(3,'0')}`)) throw new Error('仕様コードは仕様No.に対応するS001形式で入力してください。');

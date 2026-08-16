@@ -15,6 +15,13 @@ describe('sample master data', () => {
     expect(sampleData.specifications.find((specification) => specification.code === 'S003')?.options[0]).toEqual({ code: 'S003-1', label: 'CW' });
   });
 
+  it('各仕様の参照コードと選択用備考を分離して保持する', () => {
+    const cleaningVehicle = sampleData.specifications.find((specification) => specification.code === 'S002');
+    expect(cleaningVehicle?.reference).toBe('MW01');
+    expect(cleaningVehicle?.note).toContain('クリーニングビークル以外');
+    expect(sampleData.specifications.every((specification) => typeof specification.note === 'string')).toBe(true);
+  });
+
   it('提示されたユニットを指定順で保持する', () => {
     expect(sampleData.units.map((unit) => unit.no)).toEqual([
       '100', '111', '110', '120', '131', '130', '200', '210', '220', '230', '300', '310', '320', '350',
