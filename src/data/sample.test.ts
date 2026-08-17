@@ -164,4 +164,18 @@ describe('sample master data', () => {
     expect(frontRules.find((rule) => rule.partNumber === 'HH3311G710')?.note).toBe('差）HH13114010：風船64を削除／差）HH13114010：ID-Rブラケットを削除');
     expect(frontRules.find((rule) => rule.partNumber === 'HH33128M10')?.conditions.S060).toEqual(['S060-2']);
   });
+
+  it('REAR FRAMEの79行を54件のユニークPLに統合する', () => {
+    const rearRules = sampleData.rules.filter((rule) => rule.unitNo === '320');
+    expect(rearRules).toHaveLength(54);
+    expect(new Set(rearRules.map((rule) => rule.partNumber)).size).toBe(54);
+    expect(rearRules.find((rule) => rule.partNumber === 'HH3321EZ10')?.selectable).toBe(false);
+    expect(rearRules.find((rule) => rule.partNumber === 'HH3321EZ10')?.note).toBe('HH13215H10に統合');
+    expect(rearRules.find((rule) => rule.partNumber === 'HH3321EZ10')?.conditions).toEqual({});
+    expect(rearRules.find((rule) => rule.partNumber === 'HH33228M10')?.selectable).toBe(false);
+    expect(rearRules.find((rule) => rule.partNumber === 'HH13230010')?.conditions.S062).toEqual(['S062-2']);
+    expect(rearRules.find((rule) => rule.partNumber === 'HH3320CB10')?.note).toBe('ウィンカーがIKO');
+    expect(rearRules.find((rule) => rule.partNumber === 'HH3320CB10')?.conditions.S019).toEqual(['S019-5','S019-4']);
+    expect(rearRules.find((rule) => rule.partNumber === 'HH3322GP10')?.conditions).toMatchObject({S020:['S020-2'],S036:['S036-2'],S037:['S037-2']});
+  });
 });
