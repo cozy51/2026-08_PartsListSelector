@@ -97,7 +97,7 @@ Google Drive連携は任意です。利用する場合はGoogle Cloud Consoleで
 4. マスターデータ管理画面の「Google Drive保存」にクライアントIDを入力して接続します。
 5. 「現在のマスターを保存」でバックアップし、「Driveから読み込む」でIndexedDBへ復元できます。
 
-Google Driveには `WebAppsData/PartsListSelector` のフォルダ階層を自動作成し、その中へ `PartsListSelector-master.json` というファイルを作成して3種類のマスターと仕様選択状態をまとめて保存します。OAuthスコープは `drive.file` のため、このアプリが作成したフォルダとファイルだけにアクセスします。アクセストークンはメモリ内だけに保持し、画面を閉じると破棄します。クライアントIDは秘密情報ではなく、入力の手間を省くためブラウザのLocal Storageへ保存します。
+Google Driveの保存先は `WebAppsData` フォルダ（フォルダID: `1SWmOnYn98EN5nZs7Jsi3vBLkuJa4B_O6`）に固定しています。このフォルダ直下へ `PartsListSelector` フォルダを自動作成し、その中へ `PartsListSelector-master.json` というファイルを作成して3種類のマスターと仕様選択状態をまとめて保存します。フォルダIDは `src/services/googleDrive.ts` の `DRIVE_PARENT_FOLDER_ID` で管理しており、保存先を変更する場合はこの値を書き換えてください。OAuthスコープは `drive.file` のため、このアプリが作成したフォルダとファイルだけにアクセスします。アクセストークンはメモリ内だけに保持し、画面を閉じると破棄します。クライアントIDは秘密情報ではなく、入力の手間を省くためブラウザのLocal Storageへ保存します。
 
 Google Driveへの保存・読込前には、上書きの方向、ブラウザ側とDrive側の各マスター件数、Driveの最終更新日時を確認画面に表示します。「保存」はブラウザからDriveを上書きし、「読込」はDriveからブラウザを上書きします。件数と更新日時を比較し、意図した方向であることを確認してから実行してください。CSV取込と「サンプルに戻す」でも、置換前後の件数を表示して確認します。
 
