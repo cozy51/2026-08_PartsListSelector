@@ -96,4 +96,15 @@ describe('sample master data', () => {
     expect(baseRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
     expect(baseRules.find((rule) => rule.partNumber === '* NO USE')?.conditions.S001).toEqual(['S001-7']);
   });
+
+  it('HOIST DRUM UNIT(350X)の25行を5件のユニークPLに統合する', () => {
+    const drumRules = sampleData.rules.filter((rule) => rule.unitNo === '220');
+    expect(drumRules.map((rule) => rule.partNumber)).toEqual(['HH12201010','HH12201110','HH12202010','HH12202110','* NO USE']);
+    expect(drumRules.find((rule) => rule.partNumber === 'HH12201010')?.conditions).toMatchObject({S016:['S016-1'],S050:['S050-2']});
+    expect(drumRules.find((rule) => rule.partNumber === 'HH12201110')?.conditions).toMatchObject({S016:['S016-1'],S050:['S050-1']});
+    expect(drumRules.find((rule) => rule.partNumber === 'HH12202010')?.conditions).toMatchObject({S001:['S001-8','S001-9','S001-10'],S016:['S016-2'],S050:['S050-2']});
+    expect(drumRules.find((rule) => rule.partNumber === 'HH12202110')?.conditions).toMatchObject({S001:['S001-8','S001-9','S001-10'],S016:['S016-2'],S050:['S050-1']});
+    expect(drumRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(drumRules.find((rule) => rule.partNumber === '* NO USE')?.conditions.S001).toEqual(['S001-7']);
+  });
 });
