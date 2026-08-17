@@ -5,6 +5,7 @@ const DRIVE_API = 'https://www.googleapis.com/drive/v3/files';
 const UPLOAD_API = 'https://www.googleapis.com/upload/drive/v3/files';
 export const DRIVE_FILE_NAME = 'PartsListSelector-master.json';
 export const DRIVE_PARENT_FOLDER = 'WebAppsData';
+export const DRIVE_PARENT_FOLDER_ID = '1SWmOnYn98EN5nZs7Jsi3vBLkuJa4B_O6';
 export const DRIVE_APP_FOLDER = 'PartsListSelector';
 export const GOOGLE_CLIENT_ID_KEY = 'parts-list-selector-google-client-id';
 
@@ -56,22 +57,19 @@ async function driveFetch(url: string, init?: RequestInit): Promise<Response> {
   return response;
 }
 
-async function findFolder(name: string, marker: string, parentId?: string): Promise<DriveFile | undefined> {
-  const parentQuery = parentId ? ` and '${parentId}' in parents` : '';
-  const query = encodeURIComponent(`name='${name}' and mimeType='application/vnd.google-apps.folder' and trashed=false${parentQuery} and appProperties has { key='partsListSelectorFolder' and value='${marker}' }`);
+async function findFolder(name: string, marker: string, parentId: string): Promise<DriveFile | undefined> {
+  const query = encodeURIComponent(`name='${name}' and mimeType='application/vnd.google-apps.folder' and trashed=false and '${parentId}' in parents and appProperties has { key='partsListSelectorFolder' and value='${marker}' }`);
   const response = await driveFetch(`${DRIVE_API}?q=${query}&fields=files(id,name)&pageSize=1`);
   return ((await response.json()) as DriveList).files?.[0];
 }
 
-async function createFolder(name: string, marker: string, parentId?: string): Promise<DriveFile> {
-  const response = await driveFetch(`${DRIVE_API}?fields=id,name`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder', parents: parentId ? [parentId] : undefined, appProperties: { partsListSelectorFolder: marker } }) });
+async function createFolder(name: string, marker: string, parentId: string): Promise<DriveFile> {
+  const response = await driveFetch(`${DRIVE_API}?fields=id,name`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder', parents: [parentId], appProperties: { partsListSelectorFolder: marker } }) });
   return (await response.json()) as DriveFile;
 }
 
 async function getAppFolder(create: boolean): Promise<DriveFile | undefined> {
-  const parent = await findFolder(DRIVE_PARENT_FOLDER,'webAppsData') ?? (create ? await createFolder(DRIVE_PARENT_FOLDER,'webAppsData') : undefined);
-  if (!parent) return undefined;
-  return await findFolder(DRIVE_APP_FOLDER,'partsListSelector',parent.id) ?? (create ? await createFolder(DRIVE_APP_FOLDER,'partsListSelector',parent.id) : undefined);
+  return await findFolder(DRIVE_APP_FOLDER,'partsListSelector',DRIVE_PARENT_FOLDER_ID) ?? (create ? await createFolder(DRIVE_APP_FOLDER,'partsListSelector',DRIVE_PARENT_FOLDER_ID) : undefined);
 }
 
 async function findMasterFile(folderId: string): Promise<DriveFile | undefined> {
