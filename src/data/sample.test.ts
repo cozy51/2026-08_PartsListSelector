@@ -107,4 +107,24 @@ describe('sample master data', () => {
     expect(drumRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
     expect(drumRules.find((rule) => rule.partNumber === '* NO USE')?.conditions.S001).toEqual(['S001-7']);
   });
+
+  it('HOIST SENSOR UNIT(350X)の57行を22件のユニークPLに統合する', () => {
+    const sensorRules = sampleData.rules.filter((rule) => rule.unitNo === '230');
+    expect(sensorRules.map((rule) => rule.partNumber)).toEqual([
+      'HH12301010','HH12302010','HH32328M10','HH3230CB10','HH3230DH10','HH3230FN10','HH3230GN10',
+      'HH3230GP10','HH3230HD10','HH3230KN10','HH3232AP10','HH3230HQ10','HH3230HR10','HH3231JE10',
+      'HH3230L210','HH3230L910','HH3231L910','HH3230TT10','HH3230RJ10','HH3230SP10','* NO USE','HH3230G710',
+    ]);
+    expect(sensorRules.find((rule) => rule.partNumber === 'HH12301010')?.conditions).toMatchObject({S015:['S015-1'],S003:['S003-1'],S036:['S036-1'],S009:['S009-1'],S041:['S041-1','S041-2'],S020:['S020-1'],S044:['S044-1'],S016:['S016-1','S016-2'],S027:['S027-1']});
+    expect(sensorRules.find((rule) => rule.partNumber === 'HH12302010')?.conditions.S036).toBeUndefined();
+    expect(sensorRules.find((rule) => rule.partNumber === 'HH12302010')?.conditions).toMatchObject({S015:['S015-2'],S016:['S016-1','S016-2']});
+    expect(sensorRules.find((rule) => rule.partNumber === 'HH32328M10')?.note).toBe('Infineon dresdenは非改造');
+    expect(sensorRules.find((rule) => rule.partNumber === 'HH3230GN10')?.conditions.S044).toEqual(['S044-2']);
+    expect(sensorRules.find((rule) => rule.partNumber === 'HH3230TT10')?.conditions.S027).toEqual(['S027-2']);
+    expect(sensorRules.find((rule) => rule.partNumber === 'HH3232AP10')?.conditions.S003).toEqual(['S003-2']);
+    expect(sensorRules.find((rule) => rule.partNumber === 'HH3230SP10')?.selectable).toBe(false);
+    expect(sensorRules.find((rule) => rule.partNumber === 'HH3230SP10')?.note).toBe('HH12302010に統一');
+    expect(sensorRules.find((rule) => rule.partNumber === '* NO USE')?.conditions.S001).toEqual(['S001-7']);
+    expect(sensorRules.find((rule) => rule.partNumber === 'HH3230G710')?.selectable).toBe(false);
+  });
 });
