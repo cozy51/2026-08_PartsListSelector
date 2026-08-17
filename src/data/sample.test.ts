@@ -146,4 +146,22 @@ describe('sample master data', () => {
     expect(frameRules.find((rule) => rule.partNumber === 'HH13021110')?.conditions.S018).toEqual(['S018-3']);
     expect(frameRules.find((rule) => rule.partNumber === 'HH3300DG10')?.conditions.S058).toEqual(['S058-2']);
   });
+
+  it('FRONT FRAMEの176行を88件のユニークPLに統合する', () => {
+    const frontRules = sampleData.rules.filter((rule) => rule.unitNo === '310');
+    expect(frontRules).toHaveLength(88);
+    expect(new Set(frontRules.map((rule) => rule.partNumber)).size).toBe(88);
+    expect(frontRules.find((rule) => rule.partNumber === '■NG')?.selectable).toBe(false);
+    expect(frontRules.find((rule) => rule.partNumber === '■NG')?.note).toBe('3X系にはID-Rは付けられない');
+    expect(frontRules.find((rule) => rule.partNumber === '■NG')?.conditions).toMatchObject({S001:['S001-1'],S019:['S019-1','S019-2','S019-3']});
+    expect(frontRules.find((rule) => rule.partNumber === 'HH3310A410')?.selectable).toBe(false);
+    expect(frontRules.find((rule) => rule.partNumber === 'HH3310A410')?.note).toBe('DBキャンセルボタン有で統一');
+    expect(frontRules.find((rule) => rule.partNumber === 'HH3310A410')?.conditions).toEqual({});
+    expect(frontRules.find((rule) => rule.partNumber === 'HH3310DB10')?.selectable).toBe(false);
+    expect(frontRules.find((rule) => rule.partNumber === 'HH13181010')?.conditions.S007).toBeUndefined();
+    expect(frontRules.find((rule) => rule.partNumber === 'HH13181010')?.conditions).toMatchObject({S001:['S001-7'],S003:['S003-2']});
+    expect(frontRules.find((rule) => rule.partNumber === 'HH3310GR10')?.conditions.S007).toEqual(['S007-8','S007-14','S007-26']);
+    expect(frontRules.find((rule) => rule.partNumber === 'HH3311G710')?.note).toBe('差）HH13114010：風船64を削除／差）HH13114010：ID-Rブラケットを削除');
+    expect(frontRules.find((rule) => rule.partNumber === 'HH33128M10')?.conditions.S060).toEqual(['S060-2']);
+  });
 });
