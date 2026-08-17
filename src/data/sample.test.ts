@@ -127,4 +127,23 @@ describe('sample master data', () => {
     expect(sensorRules.find((rule) => rule.partNumber === '* NO USE')?.conditions.S001).toEqual(['S001-7']);
     expect(sensorRules.find((rule) => rule.partNumber === 'HH3230G710')?.selectable).toBe(false);
   });
+
+  it('CENTER FRAMEの48行を18件のユニークPLに統合する', () => {
+    const frameRules = sampleData.rules.filter((rule) => rule.unitNo === '300');
+    expect(frameRules.map((rule) => rule.partNumber)).toEqual([
+      'HH13011010','HH3300A510','HH3300CB10','HH3300AP10','HH3301RJ10','HH13012010','HH13041010','HH13042010',
+      'HH13021010','HH13031010','HH13031110','HH13031210','HH3300CF10','HH3301CF10','HH3300LK10',
+      'HH13021110','HH13021210','HH3300DG10',
+    ]);
+    expect(frameRules.find((rule) => rule.partNumber === 'HH13011010')?.conditions.S026).toBeUndefined();
+    expect(frameRules.find((rule) => rule.partNumber === 'HH13011010')?.conditions.S018).toBeUndefined();
+    expect(frameRules.find((rule) => rule.partNumber === 'HH13041010')?.conditions).toMatchObject({S001:['S001-7'],S012:['S012-1'],S003:['S003-2']});
+    expect(frameRules.find((rule) => rule.partNumber === 'HH13021010')?.selectable).toBe(false);
+    expect(frameRules.find((rule) => rule.partNumber === 'HH13021010')?.note).toBe('HH13021110 or HH13021210を選択');
+    expect(frameRules.find((rule) => rule.partNumber === 'HH13031210')?.conditions).toMatchObject({S018:['S018-1','S018-2','S018-4'],S062:['S062-2','S062-4']});
+    expect(frameRules.find((rule) => rule.partNumber === 'HH3300CF10')?.selectable).toBe(false);
+    expect(frameRules.find((rule) => rule.partNumber === 'HH3300CF10')?.note).toBe('廃番　HH3301CF10へ統合');
+    expect(frameRules.find((rule) => rule.partNumber === 'HH13021110')?.conditions.S018).toEqual(['S018-3']);
+    expect(frameRules.find((rule) => rule.partNumber === 'HH3300DG10')?.conditions.S058).toEqual(['S058-2']);
+  });
 });
