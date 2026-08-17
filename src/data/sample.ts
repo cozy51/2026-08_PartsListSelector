@@ -216,5 +216,10 @@ export const sampleData: MasterData = {
     { id:'200-HH3201SG10',unitNo:'200',partNumber:'HH3201SG10',note:'',selectable:true,conditions:{S001:['S001-9','S001-10'],S051:['S051-3'],S055:['S055-2']} },
     { id:'200-NO-USE',unitNo:'200',partNumber:'* NO USE',note:'',selectable:false,conditions:{S001:['S001-7']} },
     { id:'200-HH120A0010',unitNo:'200',partNumber:'HH120A0010',note:'',selectable:true,conditions:{S001:['S001-11'],S051:['S051-3'],S055:['S055-1']} },
+    { id:'210-HH12100010',unitNo:'210',partNumber:'HH12100010',note:'',selectable:true,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10'],S051:['S051-2'],S025:['S025-1']} },
+    { id:'210-HH12100110',unitNo:'210',partNumber:'HH12100110',note:'',selectable:true,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10'],S051:['S051-1'],S025:['S025-1']} },
+    { id:'210-HH12100210',unitNo:'210',partNumber:'HH12100210',note:'',selectable:true,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10'],S051:['S051-3'],S025:['S025-1']} },
+    { id:'210-HH32109R10',unitNo:'210',partNumber:'HH32109R10',note:'TI Lehi、Manassas、CanSemi、Catania（ラテラルロング）で使用',selectable:true,conditions:{S001:['S001-1','S001-2','S001-3','S001-8','S001-9','S001-10'],S051:['S051-3'],S025:['S025-2','S025-3']} },
+    { id:'210-NO-USE',unitNo:'210',partNumber:'* NO USE',note:'',selectable:false,conditions:{S001:['S001-7']} },
   ],
 };

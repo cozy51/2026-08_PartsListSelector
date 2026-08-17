@@ -84,4 +84,16 @@ describe('sample master data', () => {
     expect(hoistRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
     expect(hoistRules.find((rule) => rule.partNumber === 'HH120A0010')?.conditions.S001).toEqual(['S001-11']);
   });
+
+  it('HOIST BASE UNIT(350X)の40行を5件のユニークPLに統合する', () => {
+    const baseRules = sampleData.rules.filter((rule) => rule.unitNo === '210');
+    expect(baseRules.map((rule) => rule.partNumber)).toEqual(['HH12100010','HH12100110','HH12100210','HH32109R10','* NO USE']);
+    expect(baseRules.find((rule) => rule.partNumber === 'HH12100010')?.conditions).toMatchObject({S051:['S051-2'],S025:['S025-1']});
+    expect(baseRules.find((rule) => rule.partNumber === 'HH12100110')?.conditions).toMatchObject({S051:['S051-1'],S025:['S025-1']});
+    expect(baseRules.find((rule) => rule.partNumber === 'HH12100210')?.conditions).toMatchObject({S051:['S051-3'],S025:['S025-1']});
+    expect(baseRules.find((rule) => rule.partNumber === 'HH32109R10')?.conditions).toMatchObject({S001:['S001-1','S001-2','S001-3','S001-8','S001-9','S001-10'],S051:['S051-3'],S025:['S025-2','S025-3']});
+    expect(baseRules.find((rule) => rule.partNumber === 'HH32109R10')?.note).toBe('TI Lehi、Manassas、CanSemi、Catania（ラテラルロング）で使用');
+    expect(baseRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(baseRules.find((rule) => rule.partNumber === '* NO USE')?.conditions.S001).toEqual(['S001-7']);
+  });
 });
