@@ -205,4 +205,16 @@ describe('sample master data', () => {
     expect(lanRules.find((rule) => rule.partNumber === 'HH33605H10')?.selectable).toBe(false);
     expect(lanRules.find((rule) => rule.partNumber === 'HH136A0010')?.conditions.S018).toBeUndefined();
   });
+
+  it('E-84関係の92行を5件のユニークPLに統合する', () => {
+    const e84Rules = sampleData.rules.filter((rule) => rule.unitNo === '370');
+    expect(e84Rules.map((rule) => rule.partNumber)).toEqual(['HH13701010','HH13702010','HH13703010','HH3370DG10','* NO USE']);
+    expect(e84Rules.find((rule) => rule.partNumber === 'HH13701010')?.conditions.S007).toHaveLength(22);
+    expect(e84Rules.find((rule) => rule.partNumber === 'HH13701010')?.conditions).toMatchObject({S017:['S017-1'],S003:['S003-1'],S058:['S058-2']});
+    expect(e84Rules.find((rule) => rule.partNumber === 'HH13702010')?.conditions).toMatchObject({S017:['S017-1'],S058:['S058-1']});
+    expect(e84Rules.find((rule) => rule.partNumber === 'HH13703010')?.conditions.S017).toEqual(['S017-2']);
+    expect(e84Rules.find((rule) => rule.partNumber === 'HH3370DG10')?.conditions.S007).toEqual(['S007-1','S007-27','S007-2']);
+    expect(e84Rules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(e84Rules.find((rule) => rule.partNumber === '* NO USE')?.conditions).toEqual({S001:['S001-7']});
+  });
 });
