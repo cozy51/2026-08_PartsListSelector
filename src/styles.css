@@ -65,7 +65,7 @@ body{font-size:16px}.brand h1{font-size:23px}.brand p{font-size:13px}nav button{
 .monitor-summary{display:flex;flex:0 0 185px;flex-direction:column;justify-content:center;gap:8px}.monitor-summary strong{font-size:14px;line-height:1.45}.monitor-summary>span{align-self:flex-start;border-radius:14px;padding:3px 8px;border:1px solid #93c5fd;background:#dbeafe;color:#1d4ed8;font-size:12px;font-weight:800;white-space:nowrap}.monitor-summary>span.complete{border-color:#278354;background:#e6f5ec;color:#278354}.monitor-summary>span.count{border-color:#315c70;background:#eaf1f4;color:#315c70}
 .selection-monitor button small{display:flex;align-items:center;gap:5px}.selection-monitor button small b{color:#264757;font-size:13px}.monitor-sequence{display:inline-grid;place-items:center;min-width:25px;height:25px;border-radius:50%;background:#315c70;color:#fff;font-size:12px;font-weight:800}.selection-monitor button.selected .monitor-sequence{background:#278354}.selection-monitor button.unselected .monitor-sequence{background:#3b82f6}
 .condition-list>.condition-chip{font-size:13px;line-height:1.55;white-space:normal}.condition-chip>small{font-size:11px;padding:5px 7px}.match-mark{font-size:13px}
-.condition-count{display:inline-block;border-radius:14px;padding:4px 9px;background:#315c70;color:#fff;font-size:12px;font-weight:800;white-space:nowrap}
+.condition-count{display:inline-block;border-radius:14px;padding:4px 9px;background:#315c70;color:#fff;font-size:12px;font-weight:800;white-space:nowrap}.condition-count.full-match{background:#278354}
 .drawer h2{font-size:24px}.drawer>p,.candidate>div span,.candidate>p{font-size:13px}.drawer h3{font-size:17px}.summary{font-size:14px}.candidate table{font-size:13px}
 
 /* 上部ナビゲーションは右端へ離さず、アプリ名の横から左寄せで並べる */
