@@ -285,4 +285,17 @@ describe('sample master data', () => {
     expect(handRules.find((rule) => rule.partNumber === 'HH3601UU10')?.note).toBe('SMIF HAND／落下防止強化PL');
     expect(handRules.find((rule) => rule.partNumber === 'HH36028M10')?.conditions.S007).toEqual(['S007-2','S007-5']);
   });
+
+  it('COVERの66行を50件のユニークPLに統合する', () => {
+    const coverRules = sampleData.rules.filter((rule) => rule.unitNo === '700');
+    expect(coverRules).toHaveLength(50);
+    expect(new Set(coverRules.map((rule) => rule.partNumber)).size).toBe(50);
+    expect(coverRules.find((rule) => rule.partNumber === 'HH3700BS10')?.selectable).toBe(false);
+    expect(coverRules.find((rule) => rule.partNumber === 'HH3700BS10')?.note).toBe('HH17011010に統合');
+    expect(coverRules.find((rule) => rule.partNumber === 'HH3701AG10')?.selectable).toBe(false);
+    expect(coverRules.find((rule) => rule.partNumber === 'HH3701EZ10')?.selectable).toBe(false);
+    expect(coverRules.find((rule) => rule.partNumber === 'HH3700EG10')?.conditions.S025).toEqual(['S025-2','S025-3']);
+    expect(coverRules.find((rule) => rule.partNumber === 'HH3700A510')?.conditions).toMatchObject({S004:['S004-1','S004-2'],S005:['S005-2','S005-1']});
+    expect(coverRules.find((rule) => rule.partNumber === 'HH17013H10')?.conditions.S022).toEqual(['S022-3']);
+  });
 });
