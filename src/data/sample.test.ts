@@ -246,4 +246,12 @@ describe('sample master data', () => {
     expect(lateralRules.find((rule) => rule.partNumber === 'HH3424AP10')?.conditions).toMatchObject({S003:['S003-2'],S028:['S028-2']});
     expect(lateralRules.find((rule) => rule.partNumber === 'HH3420UD10')?.conditions.S066).toEqual(['S066-2']);
   });
+
+  it('LATERAL GEAR BOX (350X)の19行を3件のユニークPLに統合する', () => {
+    const gearBoxRules = sampleData.rules.filter((rule) => rule.unitNo === '421');
+    expect(gearBoxRules.map((rule) => rule.partNumber)).toEqual(['* NO USE','HH14210010','HH3421AP10']);
+    expect(gearBoxRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(gearBoxRules.find((rule) => rule.partNumber === 'HH14210010')?.conditions).toEqual({S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10'],S003:['S003-1']});
+    expect(gearBoxRules.find((rule) => rule.partNumber === 'HH3421AP10')?.conditions.S003).toEqual(['S003-2']);
+  });
 });
