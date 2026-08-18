@@ -602,5 +602,10 @@ export const sampleData: MasterData = {
     { id:'710-HH3710J910',unitNo:'710',partNumber:'HH3710J910',note:'KX仕様　(旧文言対応)',selectable:true,conditions:{S031:['S031-2'],S032:['S032-2'],S001:['S001-8','S001-9']} },
     { id:'710-HH37118S10',unitNo:'710',partNumber:'HH37118S10',note:'NANYA仕様→客先ロゴで指示があるため不要',selectable:false,conditions:{} },
     { id:'710-HH3710FN10',unitNo:'710',partNumber:'HH3710FN10',note:'HH17110B10　に統合',selectable:false,conditions:{} },
+    { id:'900-HH09201310',unitNo:'900',partNumber:'HH09201310',note:'',selectable:true,conditions:{S001:['S001-7']} },
+    { id:'900-HH09201010',unitNo:'900',partNumber:'HH09201010',note:'',selectable:true,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10'],S009:['S009-1','S009-2'],S007:['S007-1','S007-27','S007-2','S007-3','S007-4','S007-5','S007-6','S007-18','S007-19','S007-7','S007-26']} },
+    { id:'900-HH3920FN10',unitNo:'900',partNumber:'HH3920FN10',note:'',selectable:true,conditions:{S001:['S001-10'],S009:['S009-2'],S007:['S007-8']} },
+    { id:'900-HH3921RJ10',unitNo:'900',partNumber:'HH3921RJ10',note:'PBN',selectable:true,conditions:{S001:['S001-10'],S009:['S009-2'],S007:['S007-14']} },
+    { id:'900-HH3920VK10',unitNo:'900',partNumber:'HH3920VK10',note:'',selectable:true,conditions:{S001:['S001-10'],S009:['S009-2'],S007:['S007-25','S007-16','S007-17']} },
   ],
 };

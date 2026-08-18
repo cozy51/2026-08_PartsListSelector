@@ -313,4 +313,14 @@ describe('sample master data', () => {
     expect(hazardRules.find((rule) => rule.partNumber === 'HH3710FN10')?.selectable).toBe(false);
     expect(hazardRules.find((rule) => rule.partNumber === 'HH3710FN10')?.note).toBe('HH17110B10　に統合');
   });
+
+  it('CARRY WAGON(SRC350)の23行を5件のユニークPLに統合する', () => {
+    const wagonRules = sampleData.rules.filter((rule) => rule.unitNo === '900');
+    expect(wagonRules.map((rule) => rule.partNumber)).toEqual(['HH09201310','HH09201010','HH3920FN10','HH3921RJ10','HH3920VK10']);
+    expect(wagonRules.find((rule) => rule.partNumber === 'HH09201310')?.conditions).toEqual({S001:['S001-7']});
+    expect(wagonRules.find((rule) => rule.partNumber === 'HH09201010')?.conditions.S009).toEqual(['S009-1','S009-2']);
+    expect(wagonRules.find((rule) => rule.partNumber === 'HH09201010')?.conditions.S007).toHaveLength(11);
+    expect(wagonRules.find((rule) => rule.partNumber === 'HH3921RJ10')?.note).toBe('PBN');
+    expect(wagonRules.find((rule) => rule.partNumber === 'HH3920VK10')?.conditions.S007).toEqual(['S007-25','S007-16','S007-17']);
+  });
 });
