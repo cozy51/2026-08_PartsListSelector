@@ -8,12 +8,15 @@ export const DRIVE_PARENT_FOLDER = 'WebAppsData';
 export const DRIVE_PARENT_FOLDER_ID = '1SWmOnYn98EN5nZs7Jsi3vBLkuJa4B_O6';
 export const DRIVE_APP_FOLDER = 'PartsListSelector';
 export const GOOGLE_CLIENT_ID_KEY = 'parts-list-selector-google-client-id';
+const FOLDER_ID_CACHE_KEY = 'parts-list-selector-drive-folder-id';
 
 type TokenResponse = { access_token?: string; error?: string; error_description?: string };
 type TokenClient = { requestAccessToken: (options?: { prompt?: string }) => void };
 type GoogleIdentity = { accounts: { oauth2: { initTokenClient: (config: { client_id: string; scope: string; callback: (response: TokenResponse) => void; error_callback: () => void }) => TokenClient } } };
 type DriveFile = { id: string; name: string; modifiedTime?: string };
 type DriveList = { files?: DriveFile[] };
+type DriveFolder = { id: string; name: string; parents?: string[]; trashed?: boolean; createdTime?: string; modifiedTime?: string };
+type DriveFolderList = { files?: DriveFolder[] };
 export type DriveMasterBackup = { data: AppSyncData; modifiedTime?: string };
 
 declare global { interface Window { google?: GoogleIdentity } }
@@ -57,32 +60,69 @@ async function driveFetch(url: string, init?: RequestInit): Promise<Response> {
   return response;
 }
 
-async function findFolder(name: string, marker: string, parentId: string): Promise<DriveFile | undefined> {
-  const query = encodeURIComponent(`name='${name}' and mimeType='application/vnd.google-apps.folder' and trashed=false and '${parentId}' in parents and appProperties has { key='partsListSelectorFolder' and value='${marker}' }`);
-  const response = await driveFetch(`${DRIVE_API}?q=${query}&fields=files(id,name)&pageSize=1`);
-  return ((await response.json()) as DriveList).files?.[0];
+function duplicateFolderError(folders: DriveFolder[]): Error {
+  console.error(`Google Drive: 「${DRIVE_PARENT_FOLDER}」直下に「${DRIVE_APP_FOLDER}」フォルダが複数見つかりました。`, folders.map((folder) => ({ id: folder.id, createdTime: folder.createdTime, modifiedTime: folder.modifiedTime })));
+  return new Error(`Google Drive に ${DRIVE_APP_FOLDER} フォルダが複数存在します。\n${DRIVE_PARENT_FOLDER} 内を確認し、使用するフォルダを1つにしてください。`);
 }
 
-async function createFolder(name: string, marker: string, parentId: string): Promise<DriveFile> {
-  const response = await driveFetch(`${DRIVE_API}?fields=id,name`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder', parents: [parentId], appProperties: { partsListSelectorFolder: marker } }) });
-  return (await response.json()) as DriveFile;
+async function findPartsListSelectorFolders(): Promise<DriveFolder[]> {
+  const query = [`name = '${DRIVE_APP_FOLDER}'`, `mimeType = 'application/vnd.google-apps.folder'`, `'${DRIVE_PARENT_FOLDER_ID}' in parents`, `trashed = false`].join(' and ');
+  const response = await driveFetch(`${DRIVE_API}?q=${encodeURIComponent(query)}&fields=files(id,name,parents,createdTime,modifiedTime)&pageSize=10`);
+  return ((await response.json()) as DriveFolderList).files ?? [];
 }
 
-async function getAppFolder(create: boolean): Promise<DriveFile | undefined> {
-  return await findFolder(DRIVE_APP_FOLDER,'partsListSelector',DRIVE_PARENT_FOLDER_ID) ?? (create ? await createFolder(DRIVE_APP_FOLDER,'partsListSelector',DRIVE_PARENT_FOLDER_ID) : undefined);
+async function createPartsListSelectorFolder(): Promise<DriveFolder> {
+  const response = await driveFetch(`${DRIVE_API}?fields=id,name,parents,createdTime,modifiedTime`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: DRIVE_APP_FOLDER, mimeType: 'application/vnd.google-apps.folder', parents: [DRIVE_PARENT_FOLDER_ID] }) });
+  return (await response.json()) as DriveFolder;
+}
+
+async function verifyCachedFolderId(id: string): Promise<DriveFolder | undefined> {
+  try {
+    const response = await driveFetch(`${DRIVE_API}/${id}?fields=id,name,parents,trashed`);
+    const file = (await response.json()) as DriveFolder;
+    if (file.trashed || !file.parents?.includes(DRIVE_PARENT_FOLDER_ID)) return undefined;
+    return file;
+  } catch {
+    return undefined;
+  }
+}
+
+async function resolveFolderId(create: boolean): Promise<string | undefined> {
+  const cached = localStorage.getItem(FOLDER_ID_CACHE_KEY);
+  if (cached) {
+    const verified = await verifyCachedFolderId(cached);
+    if (verified) return verified.id;
+    localStorage.removeItem(FOLDER_ID_CACHE_KEY);
+  }
+  const existing = await findPartsListSelectorFolders();
+  if (existing.length > 1) throw duplicateFolderError(existing);
+  if (existing.length === 1) { localStorage.setItem(FOLDER_ID_CACHE_KEY, existing[0].id); return existing[0].id; }
+  if (!create) return undefined;
+  await createPartsListSelectorFolder();
+  const afterCreate = await findPartsListSelectorFolders();
+  if (afterCreate.length > 1) throw duplicateFolderError(afterCreate);
+  const folder = afterCreate[0];
+  if (!folder) throw new Error('Google Driveの保存先フォルダを作成できませんでした。');
+  localStorage.setItem(FOLDER_ID_CACHE_KEY, folder.id);
+  return folder.id;
+}
+
+export async function getOrCreatePartsListSelectorFolder(): Promise<string> {
+  const folderId = await resolveFolderId(true);
+  if (!folderId) throw new Error('Google Driveの保存先フォルダを作成できませんでした。');
+  return folderId;
 }
 
 async function findMasterFile(folderId: string): Promise<DriveFile | undefined> {
-  const query = encodeURIComponent(`name='${DRIVE_FILE_NAME}' and '${folderId}' in parents and trashed=false and appProperties has { key='partsListSelector' and value='master' }`);
-  const response = await driveFetch(`${DRIVE_API}?q=${query}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc&pageSize=1`);
+  const query = [`name = '${DRIVE_FILE_NAME}'`, `'${folderId}' in parents`, `trashed = false`].join(' and ');
+  const response = await driveFetch(`${DRIVE_API}?q=${encodeURIComponent(query)}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc&pageSize=1`);
   return ((await response.json()) as DriveList).files?.[0];
 }
 
 export async function saveMasterToGoogleDrive(data: AppSyncData): Promise<string> {
-  const folder = await getAppFolder(true);
-  if (!folder) throw new Error('Google Driveの保存先フォルダを作成できませんでした。');
-  const existing = await findMasterFile(folder.id);
-  const metadata = existing ? {} : { name: DRIVE_FILE_NAME, mimeType: 'application/json', parents: [folder.id], appProperties: { partsListSelector: 'master' } };
+  const folderId = await getOrCreatePartsListSelectorFolder();
+  const existing = await findMasterFile(folderId);
+  const metadata = existing ? {} : { name: DRIVE_FILE_NAME, mimeType: 'application/json', parents: [folderId] };
   const form = new FormData(); form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' })); form.append('file', new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
   const url = existing ? `${UPLOAD_API}/${existing.id}?uploadType=multipart&fields=id,name,modifiedTime` : `${UPLOAD_API}?uploadType=multipart&fields=id,name,modifiedTime`;
   const response = await driveFetch(url, { method: existing ? 'PATCH' : 'POST', body: form });
@@ -96,8 +136,8 @@ async function readMasterFile(file: DriveFile): Promise<DriveMasterBackup> {
 }
 
 export async function getGoogleDriveBackupInfo(): Promise<DriveMasterBackup | undefined> {
-  const folder = await getAppFolder(false);
-  const file = folder ? await findMasterFile(folder.id) : undefined;
+  const folderId = await resolveFolderId(false);
+  const file = folderId ? await findMasterFile(folderId) : undefined;
   return file ? readMasterFile(file) : undefined;
 }
 
