@@ -298,4 +298,19 @@ describe('sample master data', () => {
     expect(coverRules.find((rule) => rule.partNumber === 'HH3700A510')?.conditions).toMatchObject({S004:['S004-1','S004-2'],S005:['S005-2','S005-1']});
     expect(coverRules.find((rule) => rule.partNumber === 'HH17013H10')?.conditions.S022).toEqual(['S022-3']);
   });
+
+  it('HAZARD LABELの183行を20件のユニークPLに統合する', () => {
+    const hazardRules = sampleData.rules.filter((rule) => rule.unitNo === '710');
+    expect(hazardRules).toHaveLength(20);
+    expect(new Set(hazardRules.map((rule) => rule.partNumber)).size).toBe(20);
+    expect(hazardRules.find((rule) => rule.partNumber === 'HH17120010')?.conditions).toEqual({S030:['S030-2']});
+    expect(hazardRules.find((rule) => rule.partNumber === 'HH17121010')?.conditions).toEqual({S030:['S030-1']});
+    expect(hazardRules.find((rule) => rule.partNumber === 'HH17110A10')?.conditions.S001).toHaveLength(9);
+    expect(hazardRules.find((rule) => rule.partNumber === 'HH3714AP10')?.conditions.S001).toEqual(['S001-7','S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10']);
+    expect(hazardRules.find((rule) => rule.partNumber === 'HH3710J910')?.conditions.S001).toEqual(['S001-8','S001-9']);
+    expect(hazardRules.find((rule) => rule.partNumber === 'HH3710J910')?.note).toBe('KX仕様　(旧文言対応)');
+    expect(hazardRules.find((rule) => rule.partNumber === 'HH37118S10')?.selectable).toBe(false);
+    expect(hazardRules.find((rule) => rule.partNumber === 'HH3710FN10')?.selectable).toBe(false);
+    expect(hazardRules.find((rule) => rule.partNumber === 'HH3710FN10')?.note).toBe('HH17110B10　に統合');
+  });
 });
