@@ -217,4 +217,17 @@ describe('sample master data', () => {
     expect(e84Rules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
     expect(e84Rules.find((rule) => rule.partNumber === '* NO USE')?.conditions).toEqual({S001:['S001-7']});
   });
+
+  it('THETA UNIT(350X)の39行を6件のユニークPLに統合する', () => {
+    const thetaRules = sampleData.rules.filter((rule) => rule.unitNo === '400');
+    expect(thetaRules.map((rule) => rule.partNumber)).toEqual(['* NO USE','HH14000010','HH14000H10','HH3404AP10','HH3400EG10','HH34009R10']);
+    expect(thetaRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(thetaRules.find((rule) => rule.partNumber === 'HH14000010')?.conditions).toMatchObject({S013:['S013-1'],S003:['S003-1'],S025:['S025-1'],S026:['S026-5','S026-1']});
+    expect(thetaRules.find((rule) => rule.partNumber === 'HH14000H10')?.conditions.S026).toEqual(['S026-5','S026-1','S026-4','S026-2']);
+    expect(thetaRules.find((rule) => rule.partNumber === 'HH3404AP10')?.conditions.S003).toEqual(['S003-2']);
+    expect(thetaRules.find((rule) => rule.partNumber === 'HH3400EG10')?.note).toBe('超ラテラルロングST対応');
+    expect(thetaRules.find((rule) => rule.partNumber === 'HH3400EG10')?.conditions).toMatchObject({S026:['S026-3'],S001:['S001-9']});
+    expect(thetaRules.find((rule) => rule.partNumber === 'HH34009R10')?.note).toBe('TI Lehi特殊');
+    expect(thetaRules.find((rule) => rule.partNumber === 'HH34009R10')?.conditions).toMatchObject({S025:['S025-2','S025-3'],S001:['S001-8','S001-1']});
+  });
 });
