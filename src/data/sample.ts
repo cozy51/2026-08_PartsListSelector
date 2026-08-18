@@ -609,5 +609,9 @@ export const sampleData: MasterData = {
     { id:'900-HH3920VK10',unitNo:'900',partNumber:'HH3920VK10',note:'',selectable:true,conditions:{S001:['S001-10'],S009:['S009-2'],S007:['S007-25','S007-16','S007-17']} },
     { id:'140-HH11401010',unitNo:'140',partNumber:'HH11401010',note:'',selectable:true,conditions:{S001:['S001-7']} },
     { id:'140-NO-USE',unitNo:'140',partNumber:'* NO USE',note:'',selectable:false,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10','S001-11']} },
+    { id:'390-HH13901010',unitNo:'390',partNumber:'HH13901010',note:'',selectable:true,conditions:{S001:['S001-7'],S003:['S003-1'],S002:['S002-1']} },
+    { id:'390-HH13902010',unitNo:'390',partNumber:'HH13902010',note:'',selectable:true,conditions:{S001:['S001-7'],S003:['S003-1'],S002:['S002-2']} },
+    { id:'390-HH13911010',unitNo:'390',partNumber:'HH13911010',note:'',selectable:true,conditions:{S001:['S001-7'],S003:['S003-2'],S002:['S002-2']} },
+    { id:'390-NO-USE',unitNo:'390',partNumber:'* NO USE',note:'',selectable:false,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10','S001-11']} },
   ],
 };

@@ -331,4 +331,13 @@ describe('sample master data', () => {
     expect(nozzleRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
     expect(nozzleRules.find((rule) => rule.partNumber === '* NO USE')?.conditions.S001).toEqual(['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10','S001-11']);
   });
+
+  it('CLEANER UNITの13行を4件のユニークPLに統合する', () => {
+    const cleanerRules = sampleData.rules.filter((rule) => rule.unitNo === '390');
+    expect(cleanerRules.map((rule) => rule.partNumber)).toEqual(['HH13901010','HH13902010','HH13911010','* NO USE']);
+    expect(cleanerRules.find((rule) => rule.partNumber === 'HH13901010')?.conditions).toEqual({S001:['S001-7'],S003:['S003-1'],S002:['S002-1']});
+    expect(cleanerRules.find((rule) => rule.partNumber === 'HH13902010')?.conditions).toEqual({S001:['S001-7'],S003:['S003-1'],S002:['S002-2']});
+    expect(cleanerRules.find((rule) => rule.partNumber === 'HH13911010')?.conditions).toEqual({S001:['S001-7'],S003:['S003-2'],S002:['S002-2']});
+    expect(cleanerRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+  });
 });
