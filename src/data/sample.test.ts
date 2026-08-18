@@ -254,4 +254,19 @@ describe('sample master data', () => {
     expect(gearBoxRules.find((rule) => rule.partNumber === 'HH14210010')?.conditions).toEqual({S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10'],S003:['S003-1']});
     expect(gearBoxRules.find((rule) => rule.partNumber === 'HH3421AP10')?.conditions.S003).toEqual(['S003-2']);
   });
+
+  it('CRADLE(350X)の38行を28件のユニークPLに統合する', () => {
+    const cradleRules = sampleData.rules.filter((rule) => rule.unitNo === '500');
+    expect(cradleRules).toHaveLength(28);
+    expect(new Set(cradleRules.map((rule) => rule.partNumber)).size).toBe(28);
+    expect(cradleRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(cradleRules.find((rule) => rule.partNumber === 'HH3501AG10')?.selectable).toBe(false);
+    expect(cradleRules.find((rule) => rule.partNumber === 'HH3501AG10')?.note).toBe('HH35028M10へ統合');
+    expect(cradleRules.find((rule) => rule.partNumber === 'HH3501AG10')?.conditions).toEqual({});
+    expect(cradleRules.find((rule) => rule.partNumber === 'HH3501GP10')?.note).toBe('Infinoen AG');
+    expect(cradleRules.find((rule) => rule.partNumber === 'HH3501GP10')?.conditions).toMatchObject({S004:['S004-1'],S005:['S005-2'],S037:['S037-2']});
+    expect(cradleRules.find((rule) => rule.partNumber === 'HH3500VH10')?.conditions).toMatchObject({S001:['S001-10','S001-6'],S013:['S013-3','S013-2']});
+    expect(cradleRules.find((rule) => rule.partNumber === 'HH3501VK10')?.conditions.S007).toBeUndefined();
+    expect(cradleRules.find((rule) => rule.partNumber === 'HH3501TT10')?.conditions.S027).toEqual(['S027-2']);
+  });
 });
