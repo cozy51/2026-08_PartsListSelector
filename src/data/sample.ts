@@ -433,5 +433,11 @@ export const sampleData: MasterData = {
     { id:'370-HH13703010',unitNo:'370',partNumber:'HH13703010',note:'',selectable:true,conditions:{S001:['S001-8','S001-9','S001-10'],S017:['S017-2'],S003:['S003-1'],S007:['S007-1','S007-27','S007-2','S007-3','S007-4','S007-5','S007-6','S007-7','S007-8','S007-26','S007-15','S007-16','S007-17','S007-25','S007-18','S007-19','S007-9','S007-10','S007-11','S007-12','S007-13','S007-14'],S058:['S058-2']} },
     { id:'370-HH3370DG10',unitNo:'370',partNumber:'HH3370DG10',note:'',selectable:true,conditions:{S001:['S001-4','S001-5'],S017:['S017-1'],S003:['S003-1'],S007:['S007-1','S007-27','S007-2'],S058:['S058-2']} },
     { id:'370-NO-USE',unitNo:'370',partNumber:'* NO USE',note:'',selectable:false,conditions:{S001:['S001-7']} },
+    { id:'400-NO-USE',unitNo:'400',partNumber:'* NO USE',note:'',selectable:false,conditions:{S001:['S001-7']} },
+    { id:'400-HH14000010',unitNo:'400',partNumber:'HH14000010',note:'',selectable:true,conditions:{S013:['S013-1'],S003:['S003-1'],S025:['S025-1'],S026:['S026-5','S026-1'],S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10']} },
+    { id:'400-HH14000H10',unitNo:'400',partNumber:'HH14000H10',note:'',selectable:true,conditions:{S013:['S013-3'],S003:['S003-1'],S025:['S025-1'],S026:['S026-5','S026-1','S026-4','S026-2'],S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10']} },
+    { id:'400-HH3404AP10',unitNo:'400',partNumber:'HH3404AP10',note:'',selectable:true,conditions:{S013:['S013-3'],S003:['S003-2'],S025:['S025-1'],S026:['S026-5','S026-1'],S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10']} },
+    { id:'400-HH3400EG10',unitNo:'400',partNumber:'HH3400EG10',note:'超ラテラルロングST対応',selectable:true,conditions:{S013:['S013-3'],S003:['S003-1'],S025:['S025-1'],S026:['S026-3'],S001:['S001-9']} },
+    { id:'400-HH34009R10',unitNo:'400',partNumber:'HH34009R10',note:'TI Lehi特殊',selectable:true,conditions:{S013:['S013-1'],S003:['S003-1'],S025:['S025-2','S025-3'],S026:['S026-1','S026-5'],S001:['S001-8','S001-1']} },
   ],
 };
