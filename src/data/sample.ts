@@ -607,5 +607,7 @@ export const sampleData: MasterData = {
     { id:'900-HH3920FN10',unitNo:'900',partNumber:'HH3920FN10',note:'',selectable:true,conditions:{S001:['S001-10'],S009:['S009-2'],S007:['S007-8']} },
     { id:'900-HH3921RJ10',unitNo:'900',partNumber:'HH3921RJ10',note:'PBN',selectable:true,conditions:{S001:['S001-10'],S009:['S009-2'],S007:['S007-14']} },
     { id:'900-HH3920VK10',unitNo:'900',partNumber:'HH3920VK10',note:'',selectable:true,conditions:{S001:['S001-10'],S009:['S009-2'],S007:['S007-25','S007-16','S007-17']} },
+    { id:'140-HH11401010',unitNo:'140',partNumber:'HH11401010',note:'',selectable:true,conditions:{S001:['S001-7']} },
+    { id:'140-NO-USE',unitNo:'140',partNumber:'* NO USE',note:'',selectable:false,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10','S001-11']} },
   ],
 };

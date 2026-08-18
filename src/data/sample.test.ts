@@ -323,4 +323,12 @@ describe('sample master data', () => {
     expect(wagonRules.find((rule) => rule.partNumber === 'HH3921RJ10')?.note).toBe('PBN');
     expect(wagonRules.find((rule) => rule.partNumber === 'HH3920VK10')?.conditions.S007).toEqual(['S007-25','S007-16','S007-17']);
   });
+
+  it('CLEANING NOZZLE UNITの11行を2件のユニークPLに統合する', () => {
+    const nozzleRules = sampleData.rules.filter((rule) => rule.unitNo === '140');
+    expect(nozzleRules.map((rule) => rule.partNumber)).toEqual(['HH11401010','* NO USE']);
+    expect(nozzleRules.find((rule) => rule.partNumber === 'HH11401010')?.conditions).toEqual({S001:['S001-7']});
+    expect(nozzleRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(nozzleRules.find((rule) => rule.partNumber === '* NO USE')?.conditions.S001).toEqual(['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10','S001-11']);
+  });
 });
