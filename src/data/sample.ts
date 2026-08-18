@@ -422,5 +422,11 @@ export const sampleData: MasterData = {
     { id:'350-HH135A1110',unitNo:'350',partNumber:'HH135A1110',note:'',selectable:true,conditions:{S001:['S001-11'],S018:['S018-3']} },
     { id:'350-HH135A1210',unitNo:'350',partNumber:'HH135A1210',note:'',selectable:true,conditions:{S001:['S001-11'],S018:['S018-4']} },
     { id:'350-HH135A1310',unitNo:'350',partNumber:'HH135A1310',note:'',selectable:true,conditions:{S001:['S001-11'],S018:['S018-2']} },
+    { id:'360-HH13600010',unitNo:'360',partNumber:'HH13600010',note:'在庫処理済のため　HH33605H10 ⇒　HH13600010　へ変更(20260702:wtanabe)',selectable:true,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10','S001-7'],S003:['S003-1'],S018:['S018-2','S018-1','S018-3','S018-4']} },
+    { id:'360-HH3360G410',unitNo:'360',partNumber:'HH3360G410',note:'',selectable:true,conditions:{S001:['S001-10'],S003:['S003-2'],S018:['S018-1']} },
+    { id:'360-NO-USE',unitNo:'360',partNumber:'* NO USE',note:'',selectable:false,conditions:{S001:['S001-7'],S003:['S003-2']} },
+    { id:'360-HH13601010',unitNo:'360',partNumber:'HH13601010',note:'CCC認証品で全仕様統一のため廃番',selectable:false,conditions:{} },
+    { id:'360-HH136A0010',unitNo:'360',partNumber:'HH136A0010',note:'',selectable:true,conditions:{S001:['S001-11'],S003:['S003-1']} },
+    { id:'360-HH33605H10',unitNo:'360',partNumber:'HH33605H10',note:'在庫処理済のため　HH33605H10 ⇒　HH13600010　へ変更(20260702:wtanabe)',selectable:false,conditions:{} },
   ],
 };

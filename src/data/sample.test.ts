@@ -192,4 +192,17 @@ describe('sample master data', () => {
     expect(feederRules.find((rule) => rule.partNumber === 'HH3351MT10')?.conditions.S001).toEqual(['S001-9','S001-8']);
     expect(feederRules.find((rule) => rule.partNumber === 'HH135A1010')?.conditions).toEqual({S001:['S001-11'],S018:['S018-1']});
   });
+
+  it('LAN UNIT(350X)の46行を6件のユニークPLに統合する', () => {
+    const lanRules = sampleData.rules.filter((rule) => rule.unitNo === '360');
+    expect(lanRules.map((rule) => rule.partNumber)).toEqual(['HH13600010','HH3360G410','* NO USE','HH13601010','HH136A0010','HH33605H10']);
+    expect(lanRules.find((rule) => rule.partNumber === 'HH13600010')?.note).toBe('在庫処理済のため　HH33605H10 ⇒　HH13600010　へ変更(20260702:wtanabe)');
+    expect(lanRules.find((rule) => rule.partNumber === 'HH13600010')?.conditions.S018).toEqual(['S018-2','S018-1','S018-3','S018-4']);
+    expect(lanRules.find((rule) => rule.partNumber === 'HH3360G410')?.conditions).toEqual({S001:['S001-10'],S003:['S003-2'],S018:['S018-1']});
+    expect(lanRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(lanRules.find((rule) => rule.partNumber === '* NO USE')?.conditions).toEqual({S001:['S001-7'],S003:['S003-2']});
+    expect(lanRules.find((rule) => rule.partNumber === 'HH13601010')?.selectable).toBe(false);
+    expect(lanRules.find((rule) => rule.partNumber === 'HH33605H10')?.selectable).toBe(false);
+    expect(lanRules.find((rule) => rule.partNumber === 'HH136A0010')?.conditions.S018).toBeUndefined();
+  });
 });
