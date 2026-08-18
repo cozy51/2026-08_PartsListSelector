@@ -340,4 +340,14 @@ describe('sample master data', () => {
     expect(cleanerRules.find((rule) => rule.partNumber === 'HH13911010')?.conditions).toEqual({S001:['S001-7'],S003:['S003-2'],S002:['S002-2']});
     expect(cleanerRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
   });
+
+  it('LOGO STICKER(客先)の6行を6件のユニークPLに統合する', () => {
+    const logoRules = sampleData.rules.filter((rule) => rule.unitNo === '720');
+    expect(logoRules.map((rule) => rule.partNumber)).toEqual(['* NO USE','HH37128S10','HH3713EM10','HH3714FR10','HH3712C210','HH3700E710']);
+    expect(logoRules.find((rule) => rule.partNumber === '* NO USE')?.conditions).toEqual({S034:['S034-1']});
+    expect(logoRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(logoRules.filter((rule) => rule.selectable).every((rule) => rule.conditions.S034?.[0] === 'S034-2')).toBe(true);
+    expect(logoRules.find((rule) => rule.partNumber === 'HH37128S10')?.note).toBe('NANYA');
+    expect(logoRules.find((rule) => rule.partNumber === 'HH3700E710')?.note).toBe('CanSemi');
+  });
 });

@@ -613,5 +613,11 @@ export const sampleData: MasterData = {
     { id:'390-HH13902010',unitNo:'390',partNumber:'HH13902010',note:'',selectable:true,conditions:{S001:['S001-7'],S003:['S003-1'],S002:['S002-2']} },
     { id:'390-HH13911010',unitNo:'390',partNumber:'HH13911010',note:'',selectable:true,conditions:{S001:['S001-7'],S003:['S003-2'],S002:['S002-2']} },
     { id:'390-NO-USE',unitNo:'390',partNumber:'* NO USE',note:'',selectable:false,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10','S001-11']} },
+    { id:'720-NO-USE',unitNo:'720',partNumber:'* NO USE',note:'',selectable:false,conditions:{S034:['S034-1']} },
+    { id:'720-HH37128S10',unitNo:'720',partNumber:'HH37128S10',note:'NANYA',selectable:true,conditions:{S034:['S034-2']} },
+    { id:'720-HH3713EM10',unitNo:'720',partNumber:'HH3713EM10',note:'YMTC',selectable:true,conditions:{S034:['S034-2']} },
+    { id:'720-HH3714FR10',unitNo:'720',partNumber:'HH3714FR10',note:'Silan',selectable:true,conditions:{S034:['S034-2']} },
+    { id:'720-HH3712C210',unitNo:'720',partNumber:'HH3712C210',note:'XMC',selectable:true,conditions:{S034:['S034-2']} },
+    { id:'720-HH3700E710',unitNo:'720',partNumber:'HH3700E710',note:'CanSemi',selectable:true,conditions:{S034:['S034-2']} },
   ],
 };
