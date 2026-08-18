@@ -449,5 +449,8 @@ export const sampleData: MasterData = {
     { id:'420-HH3420EG10',unitNo:'420',partNumber:'HH3420EG10',note:'超ラテラルロングST対応',selectable:true,conditions:{S013:['S013-3'],S003:['S003-1'],S001:['S001-9'],S007:['S007-2'],S025:['S025-1'],S061:['S061-1'],S026:['S026-3'],S028:['S028-1'],S066:['S066-1']} },
     { id:'420-HH3424AP10',unitNo:'420',partNumber:'HH3424AP10',note:'TSMC様仕様',selectable:true,conditions:{S013:['S013-3'],S003:['S003-2'],S001:['S001-10'],S007:['S007-7'],S025:['S025-1'],S061:['S061-1'],S026:['S026-1'],S028:['S028-2'],S066:['S066-1']} },
     { id:'420-HH3420UD10',unitNo:'420',partNumber:'HH3420UD10',note:'',selectable:true,conditions:{S013:['S013-3'],S003:['S003-1'],S001:['S001-8'],S007:['S007-1'],S025:['S025-1'],S061:['S061-1'],S026:['S026-1'],S028:['S028-1'],S066:['S066-2']} },
+    { id:'421-NO-USE',unitNo:'421',partNumber:'* NO USE',note:'',selectable:false,conditions:{S001:['S001-7']} },
+    { id:'421-HH14210010',unitNo:'421',partNumber:'HH14210010',note:'',selectable:true,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10'],S003:['S003-1']} },
+    { id:'421-HH3421AP10',unitNo:'421',partNumber:'HH3421AP10',note:'',selectable:true,conditions:{S001:['S001-1','S001-2','S001-3','S001-4','S001-5','S001-6','S001-8','S001-9','S001-10'],S003:['S003-2']} },
   ],
 };
