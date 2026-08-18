@@ -230,4 +230,20 @@ describe('sample master data', () => {
     expect(thetaRules.find((rule) => rule.partNumber === 'HH34009R10')?.note).toBe('TI Lehi特殊');
     expect(thetaRules.find((rule) => rule.partNumber === 'HH34009R10')?.conditions).toMatchObject({S025:['S025-2','S025-3'],S001:['S001-8','S001-1']});
   });
+
+  it('LATERAL UNIT(350X)の86行を10件のユニークPLに統合する', () => {
+    const lateralRules = sampleData.rules.filter((rule) => rule.unitNo === '420');
+    expect(lateralRules.map((rule) => rule.partNumber)).toEqual([
+      '* NO USE','HH14200010','HH14200H10','HH14202H10','HH34209R10','HH3420A510','HH3420DG10','HH3420EG10','HH3424AP10','HH3420UD10',
+    ]);
+    expect(lateralRules.find((rule) => rule.partNumber === '* NO USE')?.selectable).toBe(false);
+    expect(lateralRules.find((rule) => rule.partNumber === 'HH14200010')?.conditions.S026).toEqual(['S026-5','S026-1','S026-2']);
+    expect(lateralRules.find((rule) => rule.partNumber === 'HH14200H10')?.conditions.S026).toEqual(['S026-5','S026-1','S026-4','S026-2']);
+    expect(lateralRules.find((rule) => rule.partNumber === 'HH14202H10')?.conditions).toMatchObject({S061:['S061-2'],S001:['S001-4','S001-5','S001-6']});
+    expect(lateralRules.find((rule) => rule.partNumber === 'HH3420DG10')?.selectable).toBe(false);
+    expect(lateralRules.find((rule) => rule.partNumber === 'HH3420DG10')?.note).toBe('MSA特殊→HH14202H10へ');
+    expect(lateralRules.find((rule) => rule.partNumber === 'HH3420DG10')?.conditions).toEqual({});
+    expect(lateralRules.find((rule) => rule.partNumber === 'HH3424AP10')?.conditions).toMatchObject({S003:['S003-2'],S028:['S028-2']});
+    expect(lateralRules.find((rule) => rule.partNumber === 'HH3420UD10')?.conditions.S066).toEqual(['S066-2']);
+  });
 });
