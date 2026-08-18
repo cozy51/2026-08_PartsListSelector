@@ -76,14 +76,14 @@ function App() {
 }
 
 function MasterPanel({data,selection,initialRuleUnit,onJumpToSpecification,driveClientId,driveConnected,driveBusy,autoSync,syncStatus,onAutoSyncChange,onDriveClientIdChange,onDriveConnect,onDriveSave,onDriveLoad,onDriveDisconnect,onReset,onExport,onImport }:{data:MasterData;selection:Selection;initialRuleUnit:string;onJumpToSpecification:(code:string,unitNo:string)=>void;driveClientId:string;driveConnected:boolean;driveBusy:boolean;autoSync:boolean;syncStatus:string;onAutoSyncChange:(enabled:boolean)=>void;onDriveClientIdChange:(value:string)=>void;onDriveConnect:()=>void;onDriveSave:()=>void;onDriveLoad:()=>void;onDriveDisconnect:()=>void;onReset:()=>void;onExport:(k:MasterKind)=>void;onImport:(k:MasterKind)=>void}) {
-  const [selectedMaster, setSelectedMaster] = useState<MasterKind>(initialRuleUnit?'rules':'specifications');
+  const [selectedMaster, setSelectedMaster] = useState<MasterKind>('rules');
   const [masterSearch, setMasterSearch] = useState('');
   const ruleUnits = [...data.units].sort((a,b) => a.order-b.order);
   const [selectedRuleUnit, setSelectedRuleUnit] = useState(() => initialRuleUnit||ruleUnits[0]?.no||'');
   const blocks: { key: MasterKind; title: string; description: string; count: number }[] = [
+    { key: 'rules', title: 'PL選定条件マスター', description: 'PL品番・備考・仕様コードごとの適合条件', count: data.rules.length },
     { key: 'specifications', title: '仕様項目マスター', description: '仕様コード・項目名・選択肢コード・参照・備考', count: data.specifications.length },
     { key: 'units', title: 'ユニットマスター', description: 'ユニットNo.・名称・表示順・備考', count: data.units.length },
-    { key: 'rules', title: 'PL選定条件マスター', description: 'PL品番・備考・仕様コードごとの適合条件', count: data.rules.length },
   ];
   const query = masterSearch.trim().toLowerCase();
   const specifications = data.specifications.filter((item) => `${item.no} ${item.code} ${item.name} ${item.options.map((option)=>`${option.code} ${option.label}`).join(' ')} ${item.reference} ${item.note}`.toLowerCase().includes(query));
