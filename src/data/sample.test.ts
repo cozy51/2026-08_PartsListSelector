@@ -178,4 +178,18 @@ describe('sample master data', () => {
     expect(rearRules.find((rule) => rule.partNumber === 'HH3320CB10')?.conditions.S019).toEqual(['S019-5','S019-4']);
     expect(rearRules.find((rule) => rule.partNumber === 'HH3322GP10')?.conditions).toMatchObject({S020:['S020-2'],S036:['S036-2'],S037:['S037-2']});
   });
+
+  it('FEEDER UNITの47行を14件のユニークPLに統合する', () => {
+    const feederRules = sampleData.rules.filter((rule) => rule.unitNo === '350');
+    expect(feederRules.map((rule) => rule.partNumber)).toEqual([
+      'HH13501010','HH13501110','HH13501210','HH13501310','HH3350SV10','HH3351MT10',
+      'HH13502010','HH13502110','HH13502210','HH13502310',
+      'HH135A1010','HH135A1110','HH135A1210','HH135A1310',
+    ]);
+    expect(feederRules.find((rule) => rule.partNumber === 'HH13501010')?.conditions).toEqual({S001:['S001-7','S001-8','S001-9','S001-10'],S018:['S018-1']});
+    expect(feederRules.find((rule) => rule.partNumber === 'HH3350SV10')?.note).toBe('新型モデム先行適用／TI(SFAB)のみ');
+    expect(feederRules.find((rule) => rule.partNumber === 'HH3350SV10')?.conditions).toEqual({S001:['S001-8'],S018:['S018-4']});
+    expect(feederRules.find((rule) => rule.partNumber === 'HH3351MT10')?.conditions.S001).toEqual(['S001-9','S001-8']);
+    expect(feederRules.find((rule) => rule.partNumber === 'HH135A1010')?.conditions).toEqual({S001:['S001-11'],S018:['S018-1']});
+  });
 });
