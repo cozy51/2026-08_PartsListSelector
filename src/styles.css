@@ -11,10 +11,10 @@
 .work-tabs button.active span{background:#0b6d91;color:#fff}
 .work-tabs button:disabled{opacity:.55;cursor:not-allowed}
 .tab-panel{margin-top:-1px;border-radius:10px;min-height:650px}
-.spec-scroll{max-height:calc(100vh - 330px);min-height:390px;overflow-y:auto;border-bottom:1px solid #dce3e8;scrollbar-gutter:stable}
+.spec-scroll{border-bottom:1px solid #dce3e8}
 .sticky-actions{background:#fff}
 .result-actions{display:flex;gap:8px}
-@media(max-width:800px){.work-tabs{padding-left:5px}.work-tabs button{min-width:0;flex:1;padding:11px 9px}.work-tabs button small{display:none}.spec-scroll{max-height:none;overflow:visible}.tab-panel{min-height:0}}
+@media(max-width:800px){.work-tabs{padding-left:5px}.work-tabs button{min-width:0;flex:1;padding:11px 9px}.work-tabs button small{display:none}.tab-panel{min-height:0}}
 
 .master-grid article{cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .15s}
 .master-grid article:hover{border-color:#72afc2;transform:translateY(-1px)}
@@ -41,7 +41,7 @@
 
 /* 備考見出しは一度だけ表示し、各行は装飾せず読みやすい文字サイズにする */
 .spec-column-head,.spec-row{grid-template-columns:58px minmax(210px,.65fr) minmax(310px,.8fr) minmax(330px,1fr);gap:0 18px}
-.spec-column-head{position:sticky;top:0;z-index:3;display:grid;align-items:center;padding:13px 0;border-top:1px solid #dce3e8;border-bottom:2px solid #b8c7cf;background:#eef3f5;color:#344955;font-size:14px;font-weight:700}
+.spec-column-head{position:sticky;top:86px;z-index:3;display:grid;align-items:center;padding:13px 0;border-top:1px solid #dce3e8;border-bottom:2px solid #b8c7cf;background:#eef3f5;color:#344955;font-size:14px;font-weight:700}
 .spec-column-head span:first-child{padding-left:2px}.spec-row{min-height:88px}.spec-row select{font-size:14px}.spec-info b{font-size:15px}.spec-info small{font-size:12px}
 .spec-note{align-self:stretch;display:flex;align-items:center;padding:13px 0;background:#fff;color:#283742;font-size:14px;line-height:1.7;white-space:pre-line}
 .spec-note.empty{color:#a0a9af}
@@ -93,11 +93,14 @@ header{justify-content:flex-start}header nav{margin-left:48px;margin-right:0}
 .project-bar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 22px;padding:16px 18px;margin:0 0 -1px;border:1px solid #d5dfe5;border-radius:9px 9px 0 0;background:#f7fafb}
 .project-field{display:flex;flex-direction:column;gap:6px}
 .project-field label{color:#344955;font-size:12px;font-weight:700}
+.required-mark{margin-left:4px;border-radius:9px;padding:1px 6px;background:#fde3e1;color:#a63b35;font-size:10px;font-style:normal;font-weight:800}
 .project-field input{border:1px solid #9fb4bf;border-radius:6px;padding:10px 12px;font:inherit;font-size:14px;min-width:220px}
+.project-field-narrow input{min-width:100px;max-width:120px}
+.project-field select{border:1px solid #9fb4bf;border-radius:6px;padding:10px 34px 10px 12px;font:inherit;font-size:14px;min-width:240px}
 .project-field input:focus{outline:2px solid #9bd4e2;border-color:#288ba6}
 .project-status{align-self:center;color:#61727d;font-size:12px;font-weight:600}
 .project-actions{display:flex;gap:8px}
-@media(max-width:800px){.project-bar{flex-direction:column;align-items:stretch;border-radius:0}.project-field input{min-width:0}.project-actions{justify-content:stretch}.project-actions button{flex:1}}
+@media(max-width:800px){.project-bar{flex-direction:column;align-items:stretch;border-radius:0}.project-field input,.project-field select{min-width:0}.project-actions{justify-content:stretch}.project-actions button{flex:1}}
 
 /* Google Driveとブラウザ、どちらのデータが新しいか日時・件数で一目で判断できるようにする */
 .data-compare{display:flex;flex-wrap:wrap;gap:10px;width:100%;margin-top:4px}
