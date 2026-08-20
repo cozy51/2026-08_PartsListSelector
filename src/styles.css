@@ -127,3 +127,17 @@ header{justify-content:flex-start}header nav{margin-left:48px;margin-right:0}
 .spec-row.unselected select{border-color:#93c5fd;background-color:#fff}
 .spec-row.unselected select:focus{outline:2px solid #93c5fd;border-color:#3b82f6}
 .spec-row.unselected.jump-target{background:#dbeafe}
+
+/* Google Drive同期状態は常に見える位置（ヘッダー右）に表示する */
+header{gap:16px}
+.sync-badge{display:flex;align-items:center;gap:7px;margin-left:auto;border:1px solid #cbd5dc;border-radius:20px;background:#fff;color:#526673;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.sync-badge:hover,.sync-badge:focus-visible{border-color:#9fb4bf;outline:0}
+.sync-dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:#9aa7af}
+.sync-badge.ok{border-color:#9fd8b8;background:#eefaf3;color:#1f7349}
+.sync-badge.ok .sync-dot{background:#278354}
+.sync-badge.busy{border-color:#f3cf8a;background:#fff8ea;color:#8d5a00}
+.sync-badge.busy .sync-dot{background:#d99019;animation:sync-pulse 1s ease-in-out infinite}
+.sync-badge.danger{border-color:#e2aaa7;background:#fdecea;color:#a63b35}
+.sync-badge.danger .sync-dot{background:#c0392b}
+@keyframes sync-pulse{50%{opacity:.3}}
+@media(max-width:800px){.sync-badge{max-width:130px;padding:7px 11px;font-size:11px}}
