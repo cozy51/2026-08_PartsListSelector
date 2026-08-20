@@ -133,7 +133,7 @@ header{justify-content:flex-start}header nav{margin-left:48px;margin-right:0}
 
 /* Google Drive同期状態は常に見える位置（ヘッダー右）に表示する */
 header{gap:16px}
-.sync-badge{display:flex;align-items:center;gap:7px;margin-left:auto;border:1px solid #cbd5dc;border-radius:20px;background:#fff;color:#526673;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.sync-badge{display:flex;align-items:center;gap:7px;border:1px solid #cbd5dc;border-radius:20px;background:#fff;color:#526673;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
 .sync-badge:hover,.sync-badge:focus-visible{border-color:#9fb4bf;outline:0}
 .sync-dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:#9aa7af}
 .sync-badge.ok{border-color:#9fd8b8;background:#eefaf3;color:#1f7349}
@@ -153,3 +153,14 @@ header{gap:16px}
 .count-field.more b{color:#8a5a00}
 .count-field.tie{background:#e0f2f6;color:#0b5e77;box-shadow:inset 0 0 0 1px #7fc3d6}
 .count-field.tie b{color:#0b5e77}
+
+/* 複数候補ドロワーで、確定済みのPLを他の候補と区別して表示する */
+.candidate.confirmed{border:2px solid #278354;background:#f0faf4;opacity:1;box-shadow:0 0 0 1px #278354}
+.candidate.confirmed>div b{color:#1f6e45}
+.confirmed-badge{border-radius:12px;padding:3px 9px;background:#278354;color:#fff;font-size:11px;font-weight:800;font-style:normal;white-space:nowrap}
+
+/* PL選定結果一覧で、複数候補のうち確定済みのPLとそれ以外を区別して表示する */
+.candidate-chosen{font-weight:700;color:#1f6e45}
+.candidate-other{color:#9aa7af}
+.candidate-sep{color:#c3ccd2}
+.candidate-note{margin-left:2px;color:#278354;font-size:12px;font-style:normal;font-weight:600}
