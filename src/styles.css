@@ -96,7 +96,8 @@ header{justify-content:flex-start}header nav{margin-left:48px;margin-right:0}
 .project-field input{border:1px solid #9fb4bf;border-radius:6px;padding:10px 12px;font:inherit;font-size:14px;min-width:220px}
 .project-field input:focus{outline:2px solid #9bd4e2;border-color:#288ba6}
 .project-status{align-self:center;color:#61727d;font-size:12px;font-weight:600}
-@media(max-width:800px){.project-bar{flex-direction:column;align-items:stretch;border-radius:0}.project-field input{min-width:0}}
+.project-actions{display:flex;gap:8px}
+@media(max-width:800px){.project-bar{flex-direction:column;align-items:stretch;border-radius:0}.project-field input{min-width:0}.project-actions{justify-content:stretch}.project-actions button{flex:1}}
 
 /* Google Driveとブラウザ、どちらのデータが新しいか日時・件数で一目で判断できるようにする */
 .data-compare{display:flex;flex-wrap:wrap;gap:10px;width:100%;margin-top:4px}
