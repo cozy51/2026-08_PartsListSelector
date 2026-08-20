@@ -89,3 +89,23 @@ header{justify-content:flex-start}header nav{margin-left:48px;margin-right:0}
 .master-grid .file-icon{grid-column:1;grid-row:1;font-size:21px;line-height:1}.master-grid h3{grid-column:2;grid-row:1;align-self:center;margin:0;font-size:16px}.master-grid p{grid-column:2/4;grid-row:2;min-height:0;margin:0;font-size:12px;line-height:1.45}
 .master-grid strong{grid-column:3;grid-row:1;align-self:center;margin:0;font-size:21px;white-space:nowrap}.master-grid strong small{font-size:11px}.master-grid article>div{grid-column:1/4;grid-row:3;margin-top:2px}.master-grid article>div .secondary{padding:7px 12px;font-size:13px}.master-grid .view-master{margin-left:auto}
 @media(max-width:800px){.master-grid article{padding:13px 14px}.master-grid p{font-size:12px}}
+
+/* 物件コード・名称は仕様選択の上に固定表示し、物件コードで仕様選択を記憶・呼出できるようにする */
+.project-bar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 22px;padding:16px 18px;margin:0 0 -1px;border:1px solid #d5dfe5;border-radius:9px 9px 0 0;background:#f7fafb}
+.project-field{display:flex;flex-direction:column;gap:6px}
+.project-field label{color:#344955;font-size:12px;font-weight:700}
+.project-field input{border:1px solid #9fb4bf;border-radius:6px;padding:10px 12px;font:inherit;font-size:14px;min-width:220px}
+.project-field input:focus{outline:2px solid #9bd4e2;border-color:#288ba6}
+.project-status{align-self:center;color:#61727d;font-size:12px;font-weight:600}
+@media(max-width:800px){.project-bar{flex-direction:column;align-items:stretch;border-radius:0}.project-field input{min-width:0}}
+
+/* Google Driveとブラウザ、どちらのデータが新しいか日時・件数で一目で判断できるようにする */
+.data-compare{display:flex;flex-wrap:wrap;gap:10px;width:100%;margin-top:4px}
+.data-side{flex:1 1 260px;display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid #e7c3b3;border-radius:6px;background:#fffaf6}
+.data-side.newer{border-color:#2d9a63;background:#edf9f2}
+.data-side-label{display:flex;align-items:center;gap:8px;font-weight:700;color:#71311f}
+.data-side.newer .data-side-label{color:#1f7349}
+.newer-badge{border-radius:11px;padding:2px 8px;background:#278354;color:#fff;font-size:11px;font-weight:800;font-style:normal;white-space:nowrap}
+.data-side-count{font-weight:700}
+.data-side-time{color:#8a6a5c;font-size:12px}
+.data-side.newer .data-side-time{color:#4b8a68}
