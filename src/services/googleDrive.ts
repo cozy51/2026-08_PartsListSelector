@@ -124,9 +124,23 @@ async function findMasterFile(folderId: string): Promise<DriveFile | undefined> 
   return ((await response.json()) as DriveList).files?.[0];
 }
 
-export async function saveMasterToGoogleDrive(data: AppSyncData): Promise<string> {
+export class DriveConflictError extends Error {}
+
+// Drive上のファイルの現在の更新日時だけを取得する（本文はダウンロードしない）。
+export async function getGoogleDriveBackupModifiedTime(): Promise<string | undefined> {
+  const folderId = await resolveFolderId(false);
+  const file = folderId ? await findMasterFile(folderId) : undefined;
+  return file?.modifiedTime;
+}
+
+// guard を渡すと、Drive側が想定した更新日時から変わっていた場合に上書きせず中止する。
+// 別端末やこのアプリの別タブが保存した新しいデータを、古いデータで潰さないための保護。
+export async function saveMasterToGoogleDrive(data: AppSyncData, guard?: { expectedModifiedTime?: string }): Promise<string> {
   const folderId = await getOrCreatePartsListSelectorFolder();
   const existing = await findMasterFile(folderId);
+  if (guard && existing && existing.modifiedTime !== guard.expectedModifiedTime) {
+    throw new DriveConflictError(`Google Drive側のデータが、このブラウザが把握している状態より新しく更新されています（Drive最終更新: ${existing.modifiedTime ? new Date(existing.modifiedTime).toLocaleString('ja-JP') : '不明'}）。\n古い内容で上書きしないよう保存を中止しました。「読み込む」でDriveの内容を取り込んでから、あらためて保存してください。`);
+  }
   const metadata = existing ? {} : { name: DRIVE_FILE_NAME, mimeType: 'application/json', parents: [folderId] };
   const form = new FormData(); form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' })); form.append('file', new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
   const url = existing ? `${UPLOAD_API}/${existing.id}?uploadType=multipart&fields=id,name,modifiedTime` : `${UPLOAD_API}?uploadType=multipart&fields=id,name,modifiedTime`;
