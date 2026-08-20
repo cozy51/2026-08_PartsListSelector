@@ -176,4 +176,22 @@ header{gap:16px}
 .compare-table-wrap th.compare-spec-head{background:#e8eef1;z-index:2}
 .compare-table-wrap td.compare-spec-head{background:#fff}
 .compare-table-wrap th small{display:block;color:#7a8791;font-weight:400;margin-top:2px}
+
+/* 物件比較：基準物件の指定による一致・不一致の色分けと類似度表示 */
+.compare-controls{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px}
+.compare-controls label{font-weight:600;color:#344555}
+.compare-controls select{border:1px solid #cbd5dc;border-radius:6px;padding:8px 30px 8px 10px;font:inherit;font-size:12px;background:#fff}
+.compare-legend{display:flex;align-items:center;gap:5px;color:#667581;font-size:11px;margin-left:6px}
+.compare-dot{display:inline-block;height:9px;width:9px;border-radius:2px;margin-left:8px}
+.compare-dot:first-child{margin-left:0}
+.compare-dot.match{background:#a9e0c0}
+.compare-dot.mismatch{background:#f3b8b3}
+.compare-table-wrap th.baseline,.compare-table-wrap td.baseline{background:#eaf6fa}
+.compare-table-wrap td.match{background:#e6f5ec;color:#1f6e45}
+.compare-table-wrap td.mismatch{background:#fbe1df;color:#a03834}
+.compare-baseline-badge{display:inline-block;margin-top:4px;border-radius:10px;padding:2px 8px;background:#0d6d91;color:#fff;font-size:10px;font-weight:800;font-style:normal}
+.compare-similarity{display:inline-block;margin-top:4px;border-radius:10px;padding:2px 8px;font-size:10px;font-weight:800;font-style:normal}
+.compare-similarity.high{background:#e2f3e9;color:#28784e}
+.compare-similarity.mid{background:#ffe9ae;color:#8d5a00}
+.compare-similarity.low{background:#fbdcda;color:#a93c36}
 .candidate-note{margin-left:2px;color:#278354;font-size:12px;font-style:normal;font-weight:600}
