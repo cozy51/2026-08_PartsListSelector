@@ -9,8 +9,7 @@ export function selectParts(data: MasterData, selection: Selection): UnitResult[
       })),
     }));
     const candidates = evaluated.filter((rule) => rule.details.every((condition) => condition.matched));
-    const relevant = candidates.length ? candidates : evaluated.filter((rule) => rule.details.every((c) => c.matched || c.missing));
-    const missingSpecificationCodes = [...new Set(relevant.flatMap((rule) => rule.details.filter((condition) => condition.missing).map((condition) => condition.specificationCode)))];
+    const missingSpecificationCodes = candidates.length > 0 ? [] : [...new Set(evaluated.flatMap((rule) => rule.details.filter((condition) => condition.missing).map((condition) => condition.specificationCode)))];
     return { unit, candidates, nearCandidates: evaluated, status: candidates.length === 1 ? 'selected' : candidates.length > 1 ? 'multiple' : 'none', missingSpecificationCodes };
   });
 }
