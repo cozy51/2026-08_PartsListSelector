@@ -1,4 +1,4 @@
-import type { MasterData, PLRule, Specification, Unit, UnitResult } from '../types';
+import type { MasterData, PLRule, Specification, Unit } from '../types';
 
 const quote = (value: unknown) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 export function toCsv(rows: string[][]): string { return '\uFEFF' + rows.map((r) => r.map(quote).join(',')).join('\r\n'); }
@@ -31,5 +31,4 @@ export function importMaster(text: string, kind: MasterKind): Specification[] | 
   if (new Set(keys).size !== keys.length) throw new Error('同じユニット内でPL品番が重複しています。条件は「|」区切りで1行にまとめてください。');
   return imported;
 }
-export function exportResults(results: UnitResult[]): string { return toCsv([['No.','ユニット名','選定PL品番','判定状態','備考'], ...results.map((r) => [r.unit.no,r.unit.name,r.confirmedPartNumber ?? (r.status === 'selected' ? r.candidates[0].partNumber : r.candidates.map((x) => x.partNumber).join(' / ')),r.status === 'selected'?'選定済み':r.status === 'multiple'?'複数候補あり':'候補なし',r.unit.note])]); }
 export function downloadCsv(name: string, content: string) { const url = URL.createObjectURL(new Blob([content], { type:'text/csv;charset=utf-8' })); const a=document.createElement('a'); a.href=url; a.download=name; a.click(); URL.revokeObjectURL(url); }
