@@ -5,7 +5,7 @@ import { exportMaster, importMaster, downloadCsv, type MasterKind } from './serv
 import { downloadResultsExcel } from './services/excel';
 import { selectParts } from './services/selector';
 import { DB_NAME, DB_VERSION, deleteProject, loadMaster, loadProject, listProjects, saveMaster, saveProject, type ProjectRecord } from './services/storage';
-import { authorizeGoogleDrive, disconnectGoogleDrive, DRIVE_APP_FOLDER, DRIVE_PARENT_FOLDER, getGoogleDriveBackupInfo, GOOGLE_CLIENT_ID_KEY, isGoogleDriveAuthorized, loadMasterFromGoogleDrive, saveMasterToGoogleDrive, type DriveMasterBackup } from './services/googleDrive';
+import { authorizeGoogleDrive, disconnectGoogleDrive, DRIVE_APP_FOLDER, DRIVE_PARENT_FOLDER, getGoogleDriveBackupInfo, GOOGLE_CLIENT_ID_KEY, hasGoogleDriveGrant, isGoogleDriveAuthorized, loadMasterFromGoogleDrive, saveMasterToGoogleDrive, type DriveMasterBackup } from './services/googleDrive';
 import type { AppSyncData, MasterData, Selection, UnitResult } from './types';
 
 const statusLabel = { selected: '選定済み', multiple: '複数候補あり', none: '候補なし' } as const;
@@ -76,6 +76,7 @@ function App() {
   useEffect(() => { localStorage.setItem('parts-list-selector-serial-no', activeSerialNo); }, [activeSerialNo]);
   useEffect(() => { localStorage.setItem('parts-list-selector-project-name', projectName); }, [projectName]);
   useEffect(() => { const code=activeProjectCode; const serial=activeSerialNo; if(!code||!serial) return; const timer=window.setTimeout(async()=>{ const record:ProjectRecord={code,serialNo:serial,name:projectName,selection,updatedAt:new Date().toISOString()}; try{ await saveProject(record); setProjectList((old)=>[...old.filter((p)=>!(p.code===code&&p.serialNo===serial)),record].sort((a,b)=>a.code.localeCompare(b.code)||a.serialNo.localeCompare(b.serialNo))); }catch{ setProjectStatus('仕様の記憶に失敗しました。'); } },800); return()=>window.clearTimeout(timer); }, [activeProjectCode,activeSerialNo,projectName,selection]);
+  useEffect(() => { if(!driveClientId||!hasGoogleDriveGrant()) return; authorizeGoogleDrive(driveClientId).then(()=>setDriveConnected(isGoogleDriveAuthorized())).catch(()=>{}); }, []);
   useEffect(() => { if(!driveConnected||!autoSync) return; setSyncStatus('変更を検出しました'); const timer=window.setTimeout(async()=>{setSyncStatus('同期中…');try{const modified=await saveMasterToGoogleDrive({schemaVersion:1,masterData:data,selection,syncedAt:new Date().toISOString()});setSyncStatus(`同期済み ${new Date().toLocaleTimeString('ja-JP')}`);setDriveBackupInfo({data:{schemaVersion:1,masterData:data,selection,syncedAt:modified},modifiedTime:modified})}catch(error){setAutoSync(false);setSyncStatus('同期エラー');setNotice(error instanceof Error?error.message:'自動同期に失敗しました。')}},1200);return()=>window.clearTimeout(timer)},[data,selection,driveConnected,autoSync]);
   useEffect(() => { if(!driveConnected){setDriveBackupInfo(undefined);setDriveInfoStatus('');return} setDriveInfoStatus('Google Driveの状態を確認中…'); getGoogleDriveBackupInfo().then((info)=>{setDriveBackupInfo(info);setDriveInfoStatus(info?'':'Google Driveにはまだ保存されていません。')}).catch((error)=>setDriveInfoStatus(error instanceof Error?error.message:'Google Driveの状態を取得できませんでした。')); }, [driveConnected]);
   const specs = useMemo(() => [...data.specifications].sort((a,b) => a.order-b.order), [data]);

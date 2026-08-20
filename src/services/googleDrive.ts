@@ -9,6 +9,7 @@ export const DRIVE_PARENT_FOLDER_ID = '1SWmOnYn98EN5nZs7Jsi3vBLkuJa4B_O6';
 export const DRIVE_APP_FOLDER = 'PartsListSelector';
 export const GOOGLE_CLIENT_ID_KEY = 'parts-list-selector-google-client-id';
 const FOLDER_ID_CACHE_KEY = 'parts-list-selector-drive-folder-id';
+const GRANTED_KEY = 'parts-list-selector-google-drive-granted';
 
 type TokenResponse = { access_token?: string; error?: string; error_description?: string };
 type TokenClient = { requestAccessToken: (options?: { prompt?: string }) => void };
@@ -36,18 +37,22 @@ function loadIdentityServices(): Promise<void> {
   return scriptPromise;
 }
 
+export function hasGoogleDriveGrant(): boolean { return localStorage.getItem(GRANTED_KEY) === '1'; }
+
 export async function authorizeGoogleDrive(clientId: string): Promise<void> {
   if (!clientId.trim()) throw new Error('Google OAuthクライアントIDを入力してください。');
   await loadIdentityServices();
   const oauth2 = window.google?.accounts.oauth2;
   if (!oauth2) throw new Error('Google認証サービスを初期化できませんでした。');
+  // 既にトークンを保持している、または過去に同意済みなら、毎回の同意画面は出さずに再利用・サイレント再取得する。
+  const skipConsentPrompt = Boolean(accessToken) || hasGoogleDriveGrant();
   await new Promise<void>((resolve, reject) => {
     const client = oauth2.initTokenClient({
       client_id: clientId.trim(), scope: 'https://www.googleapis.com/auth/drive.file',
-      callback: (response) => { if (response.access_token) { accessToken = response.access_token; resolve(); } else reject(new Error(response.error_description ?? response.error ?? 'Google認証に失敗しました。')); },
+      callback: (response) => { if (response.access_token) { accessToken = response.access_token; localStorage.setItem(GRANTED_KEY, '1'); resolve(); } else reject(new Error(response.error_description ?? response.error ?? 'Google認証に失敗しました。')); },
       error_callback: () => reject(new Error('Google認証がキャンセルされました。')),
     });
-    client.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
+    client.requestAccessToken({ prompt: skipConsentPrompt ? '' : 'consent' });
   });
 }
 
@@ -55,7 +60,7 @@ async function driveFetch(url: string, init?: RequestInit): Promise<Response> {
   if (!accessToken) throw new Error('先にGoogle Driveへ接続してください。');
   const headers = new Headers(init?.headers); headers.set('Authorization', `Bearer ${accessToken}`);
   const response = await fetch(url, { ...init, headers });
-  if (response.status === 401) accessToken = '';
+  if (response.status === 401) { accessToken = ''; throw new Error('Google Driveの認証が切れました。再度「Google Driveに接続」してください。'); }
   if (!response.ok) throw new Error(`Google Drive APIエラー (${response.status})`);
   return response;
 }
@@ -147,5 +152,5 @@ export async function loadMasterFromGoogleDrive(): Promise<DriveMasterBackup> {
   return backup;
 }
 
-export function disconnectGoogleDrive(): void { accessToken = ''; }
+export function disconnectGoogleDrive(): void { accessToken = ''; localStorage.removeItem(GRANTED_KEY); }
 export function isGoogleDriveAuthorized(): boolean { return Boolean(accessToken); }
