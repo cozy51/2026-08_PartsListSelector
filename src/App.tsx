@@ -58,6 +58,8 @@ function App() {
     if (hh3601z210 && nashiCode && !(hh3601z210.conditions.S007??[]).includes(nashiCode)) { migrated={...migrated,rules:migrated.rules.map((rule)=>rule.id==='600-HH3601Z210'?{...rule,conditions:{...rule.conditions,S007:[nashiCode]}}:rule)}; notes.push('HAND(350X)のHH3601Z210を搬送物「無し」で選定できるようにしました'); }
     const hh3601ul10 = migrated.rules.find((rule)=>rule.id==='600-HH3601UL10');
     if (hh3601ul10 && !(hh3601ul10.conditions.S001??[]).includes('S001-4')) { migrated={...migrated,rules:migrated.rules.map((rule)=>rule.id==='600-HH3601UL10'?{...rule,conditions:{...rule.conditions,S001:[...(rule.conditions.S001??[]),'S001-4']}}:rule)}; notes.push('HAND(350X)のHH3601UL10をSRC350-M2-4X-Fでも選定できるようにしました'); }
+    const excludedRuleIds = ['710-HH17120010','710-HH17121010'];
+    if (migrated.rules.some((rule)=>excludedRuleIds.includes(rule.id)&&rule.selectable)) { migrated={...migrated,rules:migrated.rules.map((rule)=>excludedRuleIds.includes(rule.id)?{...rule,selectable:false}:rule)}; notes.push('HH17120010・HH17121010を選定対象外にしました'); }
     if (migrated===saved) { setData(saved); return; }
     setData(migrated); await saveMaster(migrated); setNotice(notes.join('。')+'。');
   }).catch(() => setNotice('IndexedDBを利用できないため、サンプルデータで起動しました。')); }, []);
