@@ -52,6 +52,10 @@ export async function saveProject(record: ProjectRecord): Promise<void> {
   const db = await openDb();
   await new Promise<void>((resolve, reject) => { const tx = db.transaction(PROJECTS_STORE, 'readwrite'); tx.objectStore(PROJECTS_STORE).put(record, projectKey(record.code, record.serialNo)); tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); });
 }
+export async function deleteProject(code: string, serialNo: string): Promise<void> {
+  const db = await openDb();
+  await new Promise<void>((resolve, reject) => { const tx = db.transaction(PROJECTS_STORE, 'readwrite'); tx.objectStore(PROJECTS_STORE).delete(projectKey(code, serialNo)); tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); });
+}
 export async function listProjects(): Promise<ProjectRecord[]> {
   const db = await openDb();
   return new Promise((resolve, reject) => {
