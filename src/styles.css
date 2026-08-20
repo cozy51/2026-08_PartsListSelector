@@ -119,3 +119,11 @@ header{justify-content:flex-start}header nav{margin-left:48px;margin-right:0}
 .affected-unit-list button{border:1px solid #9fc9d6;border-radius:11px;background:#eaf6fa;color:#0b6d91;padding:2px 9px;font-size:11px;font-weight:700;cursor:pointer}
 .affected-unit-list button:hover,.affected-unit-list button:focus-visible{background:#0d6d91;color:#fff;outline:0}
 @media(max-width:800px){.affected-units em{white-space:normal}}
+
+/* 仕様選択で未選択の行は、マスター画面の「未選択」表示と同じ青系統で装飾する */
+.spec-row.unselected{background:#eff6ff}
+.spec-row.unselected .number{color:#3b82f6}
+.spec-row.unselected .spec-info b{color:#1d4ed8}
+.spec-row.unselected select{border-color:#93c5fd;background-color:#fff}
+.spec-row.unselected select:focus{outline:2px solid #93c5fd;border-color:#3b82f6}
+.spec-row.unselected.jump-target{background:#dbeafe}
