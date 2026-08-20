@@ -167,4 +167,13 @@ header{gap:16px}
 .candidate-chosen{font-weight:700;color:#1f6e45}
 .candidate-other{color:#9aa7af}
 .candidate-sep{color:#c3ccd2}
+
+/* 物件比較タブ：縦軸=仕様、横軸=登録済み物件の一覧表 */
+.compare-table-wrap table{font-size:12px;white-space:nowrap}
+.compare-table-wrap th,.compare-table-wrap td{padding:10px 14px}
+.compare-table-wrap td.empty{color:#a0a9af}
+.compare-table-wrap .compare-spec-head{position:sticky;left:0;z-index:1;text-align:left;white-space:normal;min-width:190px}
+.compare-table-wrap th.compare-spec-head{background:#e8eef1;z-index:2}
+.compare-table-wrap td.compare-spec-head{background:#fff}
+.compare-table-wrap th small{display:block;color:#7a8791;font-weight:400;margin-top:2px}
 .candidate-note{margin-left:2px;color:#278354;font-size:12px;font-style:normal;font-weight:600}

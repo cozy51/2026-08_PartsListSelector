@@ -253,7 +253,7 @@ export const sampleData: MasterData = {
     { id:'300-HH3300CB10',unitNo:'300',partNumber:'HH3300CB10',note:'',selectable:true,conditions:{S001:['S001-10'],S012:['S012-1'],S003:['S003-1'],S007:['S007-7'],S026:['S026-1'],S058:['S058-2'],S062:['S062-3']} },
     { id:'300-HH3300AP10',unitNo:'300',partNumber:'HH3300AP10',note:'',selectable:true,conditions:{S001:['S001-10'],S012:['S012-1'],S003:['S003-2'],S007:['S007-7'],S026:['S026-1'],S058:['S058-2'],S062:['S062-3']} },
     { id:'300-HH3301RJ10',unitNo:'300',partNumber:'HH3301RJ10',note:'',selectable:true,conditions:{S001:['S001-10'],S012:['S012-1'],S003:['S003-1'],S007:['S007-14'],S026:['S026-1'],S058:['S058-2'],S062:['S062-3']} },
-    { id:'300-HH13012010',unitNo:'300',partNumber:'HH13012010',note:'',selectable:true,conditions:{S001:['S001-8'],S012:['S012-2'],S003:['S003-1'],S007:['S007-1','S007-27'],S026:['S026-1'],S058:['S058-2'],S062:['S062-3']} },
+    { id:'300-HH13012010',unitNo:'300',partNumber:'HH13012010',note:'',selectable:true,conditions:{S001:['S001-8'],S012:['S012-2'],S003:['S003-1'],S007:['S007-1','S007-27'],S026:['S026-1'],S058:['S058-2'],S062:['S062-2']} },
     { id:'300-HH13041010',unitNo:'300',partNumber:'HH13041010',note:'',selectable:true,conditions:{S001:['S001-7'],S012:['S012-1'],S003:['S003-2']} },
     { id:'300-HH13042010',unitNo:'300',partNumber:'HH13042010',note:'',selectable:true,conditions:{S001:['S001-7'],S012:['S012-1'],S003:['S003-1']} },
     { id:'300-HH13021010',unitNo:'300',partNumber:'HH13021010',note:'HH13021110 or HH13021210を選択',selectable:false,conditions:{} },
