@@ -6,7 +6,9 @@ export type PLRule = { id: string; unitNo: string; partNumber: string; note: str
 // ユーザーの編集内容がサンプル値へ巻き戻る（先祖返りする）のを防ぐための記録。
 export type MasterData = { specifications: Specification[]; units: Unit[]; rules: PLRule[]; appliedMigrations?: string[] };
 export type Selection = Record<string, string>;
-export type AppSyncData = { schemaVersion: 1; masterData: MasterData; selection: Selection; syncedAt: string };
+export type ProjectRecord = { code: string; serialNo: string; name: string; selection: Selection; updatedAt: string };
+// projects: 登録済み物件。旧形式のバックアップには含まれないため任意項目にしている。
+export type AppSyncData = { schemaVersion: 1; masterData: MasterData; selection: Selection; syncedAt: string; projects?: ProjectRecord[] };
 export type ConditionDetail = { specificationCode: string; expected: string[]; actual: string; matched: boolean; missing: boolean };
 export type Candidate = PLRule & { details: ConditionDetail[] };
 export type SelectionStatus = 'selected' | 'none' | 'multiple';
